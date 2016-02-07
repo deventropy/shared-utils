@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2016 Development Entropy (deventropy.org) Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.deventropy.parent</groupId>
+		<artifactId>deventropy-parent</artifactId>
+		<version>1.0-beta.1-SNAPSHOT</version>
+	</parent>
+	<groupId>org.deventropy.shared-utils</groupId>
+	<artifactId>shared-utils</artifactId>
+	<version>1.0-alpha.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Deventropy Shared Utils</name>
+	<description>Shared utility classes across Deventropy projects</description>
+	<url>http://www.deventropy.org/shared-utils/</url>
+	<inceptionYear>2016</inceptionYear>
+	<scm>
+		<connection>scm:git:https://github.com/deventropy/shared-utils.git</connection>
+		<developerConnection>scm:git:https://github.com/deventropy/shared-utils.git</developerConnection>
+		<url>https://github.com/deventropy/shared-utils</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/deventropy/shared-utils/issues/</url>
+	</issueManagement>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>org.deventropy.parent</groupId>
+						<artifactId>deventropy-cq-config</artifactId>
+						<version>1.0-beta.1-SNAPSHOT</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<!--  See http://www.petrikainulainen.net/programming/maven/creating-code-coverage-reports-for-unit-and-integration-tests-with-the-jacoco-maven-plugin/ -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<!--
+						Prepares the property pointing to the JaCoCo runtime agent which is passed as VM argument when Maven
+						the Surefire plugin is executed.
+					-->
+					<execution>
+						<id>pre-unit-test</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
+							<!--
+								Sets the name of the property containing the settings
+								for JaCoCo runtime agent.
+							-->
+							<propertyName>surefireArgLine</propertyName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- Sets the VM argument line used when unit tests are run for jacoco-maven-plugin. -->
+					<argLine>${surefireArgLine}</argLine>
+					<parallel>classes</parallel>
+					<threadCount>10</threadCount>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-site-descriptor</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attach-descriptor</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.4</version>
+					<dependencies>
+						<!-- See https://github.com/andriusvelykis/reflow-maven-skin -->
+						<dependency>
+							<groupId>lt.velykis.maven.skins</groupId>
+							<artifactId>reflow-velocity-tools</artifactId>
+							<version>1.1.1</version>
+						</dependency>
+						<!-- Reflow skin requires Velocity >= 1.7  -->
+						<dependency>
+							<groupId>org.apache.velocity</groupId>
+							<artifactId>velocity</artifactId>
+							<version>1.7</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.eluder.coveralls</groupId>
+					<artifactId>coveralls-maven-plugin</artifactId>
+					<configuration>
+						<repoToken>${env.SHARED_UTILS_COVERALLS_REPO_KEY}</repoToken>
+					</configuration>
+				</plugin>
+				<!-- Probably will need to change this to a merge goal or something when running UT and IT -->
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<configuration>
+						<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<configLocation>deventropy/code-quality/checkstyle/deventropy-checkstyle.xml</configLocation>
+					<headerLocation>deventropy/code-quality/checkstyle/license-header.txt</headerLocation>
+					<linkXRef>false</linkXRef>
+				</configuration>
+				<inherited>true</inherited>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>checkstyle</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<bottom><![CDATA[Copyright &#169; {inceptionYear}-{currentYear} Development Entropy (deventropy.org) Contributors]]></bottom>
+					<charset>${project.build.sourceEncoding}</charset>
+					<javadocVersion>1.7</javadocVersion>
+					<keywords>true</keywords>
+					<quiet>true</quiet>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<docEncoding>${project.build.sourceEncoding}</docEncoding>
+					<links>
+						<link>http://docs.oracle.com/javase/7/docs/api/</link>
+					</links>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>javadoc</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<configuration>
+					<linkXRef>false</linkXRef>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<configuration>
+					<!-- Sets the path to the file which contains the execution data. -->
+					<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changes-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>changes-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.4</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<properties>
+	</properties>
+	<modules>
+		<module>shared-utils-java</module>
+	</modules>
+	<ciManagement>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/deventropy/shared-utils</url>
+	</ciManagement>
+	<!-- Distribution Management, see http://veithen.github.io/2013/05/26/github-bintray-maven-release-plugin.html -->
+	<distributionManagement>
+		<site>
+			<id>gh-pages</id>
+			<name>GitHub Pages</name>
+			<url>scp://path.to.nowhere/</url>
+		</site>
+	</distributionManagement>
+</project>
