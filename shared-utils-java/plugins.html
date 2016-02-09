@@ -8,22 +8,22 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>Deventropy Shared Utils | Deventropy Shared Utils</title>
+		<title>Project Build Plugins | Deventropy Shared Utils :: Java</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
  
 		<link href="http://netdna.bootstrapcdn.com/bootswatch/2.3.2/cosmo/bootstrap.min.css" rel="stylesheet" />
 		<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet" />
-		<link href=".//css/bootswatch.css" rel="stylesheet" />
-		<link href=".//css/reflow-skin.css" rel="stylesheet" />
+		<link href="..//css/bootswatch.css" rel="stylesheet" />
+		<link href="..//css/reflow-skin.css" rel="stylesheet" />
 
 		<link href="http://yandex.st/highlightjs/7.5/styles/github.min.css" rel="stylesheet" />
 
-		<link href=".//css/lightbox.css" rel="stylesheet" />
+		<link href="..//css/lightbox.css" rel="stylesheet" />
 
-		<link href=".//css/site.css" rel="stylesheet" />
-		<link href=".//css/print.css" rel="stylesheet" media="print" />
+		<link href="..//css/site.css" rel="stylesheet" />
+		<link href="..//css/print.css" rel="stylesheet" media="print" />
 
 		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 		<!--[if lt IE 9]>
@@ -35,7 +35,7 @@
 <link rel="author" href="http://blog.bindul.name/"/>
 	</head>
 
-	<body class="page-index project-shared-utils" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-plugins project-shared-utils-java" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
@@ -48,18 +48,25 @@
 					<a class="brand" href="">Deventropy <span class="color-highlight">Shared Utils</span></a>
 					<div class="nav-collapse collapse" id="top-nav-collapse">
 						<ul class="nav pull-right">
-							<li ><a href="../" title="Development Entropy">Development Entropy</a></li>
+							<li ><a href="../../" title="Development Entropy">Development Entropy</a></li>
 							<li ><a href="https://github.com/deventropy/shared-utils" title="Shared Utils @ GitHub" class="externalLink">Shared Utils @ GitHub</a></li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Modules <b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li ><a href="shared-utils-java/" title="Deventropy Shared Utils :: Java">Deventropy Shared Utils :: Java</a></li>
+									<li ><a href="./" title="Deventropy Shared Utils :: Java">Deventropy Shared Utils :: Java</a></li>
+								</ul>
+							</li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Shared Utils <b class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li ><a href="index.html" title="Home">Home</a></li>
+									<li ><a href="resource-location-formats.html" title="URL Resource Formats">URL Resource Formats</a></li>
 								</ul>
 							</li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Development <b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									<li ><a href="../development.html" title="Development Guide">Development Guide</a></li>
+									<li ><a href="../../development.html" title="Development Guide">Development Guide</a></li>
 									<li ><a href="https://github.com/deventropy/shared-utils/issues" title="Issues" class="externalLink">Issues</a></li>
 									<li ><a href="https://github.com/deventropy/shared-utils#fork-destination-box" title="Fork on GitHub" class="externalLink">Fork on GitHub</a></li>
 									<li ><a href="https://travis-ci.org/deventropy/shared-utils" title="Continuous Integration" class="externalLink">Continuous Integration</a></li>
@@ -81,7 +88,7 @@
 		<div class="row" id="banner">
 			<div class="span12">
 				<div class="pull-left">
-					<a href="./" id="bannerLeft"><h1>Deventropy <span class="color-highlight">Shared Utils</span></h1></a>
+					<a href="./" id="bannerLeft"><h1>Deventropy <span class="color-highlight">Shared Utils Java</span></h1></a>
 					<p class="lead">Shared classes for Deventropy projects</p>
 				</div>
 				<div class="pull-right">
@@ -91,9 +98,11 @@
 	</div>
 		<div>
 			<ul class="breadcrumb">
-				<li><a href="./" title="Deventropy Shared Utils">Deventropy Shared Utils</a></li>
+				<li><a href="../" title="Deventropy Shared Utils">Deventropy Shared Utils</a></li>
 				<li class="divider">/</li>
-				<li>Deventropy Shared Utils</li>
+				<li><a href="./" title="Deventropy Shared Utils :: Java">Deventropy Shared Utils :: Java</a></li>
+				<li class="divider">/</li>
+				<li>Project Build Plugins</li>
 			</ul>
 		</div>
 	</header>
@@ -102,61 +111,117 @@
 	<div class="row">
 		<div class="span8">
 			<div class="body-content">
-<!-- Copyright 2015 Development Entropy (deventropy.org) Contributors
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License. --> 
-<div class="page-header">
- <h1 id="deventropy_shared_utils">Deventropy Shared Utils</h1>
-</div> 
-<p>Development Entropy shared utils is a collection of utility classes and scripts that were originally written for use in one or more Deventropy projects and shifted here (with the goal of sharing them with other projects); or were written here to be shared across projects. </p> 
 <div class="section"> 
- <h2 id="Source_Code_Issue_Tracker_Binary_Distribution_etc">Source Code, Issue Tracker, Binary Distribution etc.</h2> 
- <p><a href="./license.html"><img src="https://img.shields.io/github/license/deventropy/shared-utils.svg" alt="License" /></a> <a class="externalLink" href="https://travis-ci.org/deventropy/shared-utils"><img src="https://travis-ci.org/deventropy/shared-utils.svg?branch=master" alt="Build Status" /></a> <a class="externalLink" href="https://coveralls.io/github/deventropy/shared-utils"><img src="https://coveralls.io/repos/deventropy/shared-utils/badge.svg?branch=master&amp;service=github" alt="Coverage Status" /></a> <a class="externalLink" href="https://scan.coverity.com/projects/deventropy-shared-utils"><img src="https://scan.coverity.com/projects/7888/badge.svg" alt="Coverity Scan Status" /></a> <a class="externalLink" href="https://maven-badges.herokuapp.com/maven-central/org.deventropy.shared-utils/shared-utils"><img src="https://maven-badges.herokuapp.com/maven-central/org.deventropy.shared-utils/shared-utils/badge.svg" alt="Maven Central" /></a> <a class="externalLink" href="https://dl.bintray.com/deventropy/repository/"><img src="https://img.shields.io/bintray/v/deventropy/repository/shared-utils.svg" alt="Bintray" /></a> <a class="externalLink" href="https://www.versioneye.com/user/projects/56b9b2a2e883370039a1766a"><img src="https://www.versioneye.com/user/projects/56b9b2a2e883370039a1766a/badge.svg?style=flat" alt="Dependency Status" /></a></p> 
- <p>The <a href="../">Development Entropy</a> <a href="./">Shared Utils</a> project is hosted on GitHub. See the <a class="externalLink" href="http://github.com/deventropy/shared-utils">GitHub project</a> for source code, <a class="externalLink" href="https://github.com/deventropy/shared-utils/issues">issue tracker</a>, etc.</p> 
- <p>The project uses <a class="externalLink" href="http://travis-ci.org/">Travis CI’s</a> free service for open source projects for continuous integration. See the <a class="externalLink" href="https://travis-ci.org/deventropy/shared-utils">project’s Travis CI page</a> for build status and details.</p> 
- <p>The project uses <a class="externalLink" href="http://coveralls.io/">Coveralls’</a> free service for open source projects for tracking unit test coverage. See the <a class="externalLink" href="https://coveralls.io/github/deventropy/shared-utils">project’s Coveralls page</a> for build status and details.</p> 
- <p>The project uses <a class="externalLink" href="http://www.coverity.com/">Coverity’s</a> free static analysis service for tracking static code analysis issues. See the <a class="externalLink" href="https://scan.coverity.com/projects/deventropy-shared-utils">project’s Coverity scan page</a> for scan status.</p> 
- <p>The project uses <a class="externalLink" href="https://www.versioneye.com/">VersionEye’s</a> free service for open source projects for tracking dependency and plugin versions. See the <a class="externalLink" href="https://www.versioneye.com/user/projects/56b9b2a2e883370039a1766a">project’s VersionEye page</a> for the dependency status.</p> 
- <div class="section"> 
-  <h3 id="Binary_Distribution_Repository">Binary Distribution Repository</h3> 
-  <p>See Deventropy’s <a href="../index.html#repository">Binary Distribution Repository</a> for current Maven repository information from where the project is available.</p> 
+ <div class="page-header">
+  <h2 id="Project_Build_Plugins">Project Build Plugins</h2>
  </div> 
-</div> 
-<div class="section"> 
- <h2 id="Modules">Modules</h2> 
- <p>The project really only has one useful module:</p> 
+ <a name="Project_Build_Plugins"></a> 
  <table border="0" class="bodyTable table table-striped table-hover"> 
   <thead> 
    <tr class="a"> 
-    <th>Project </th> 
-    <th>Summary </th> 
-    <th>Artifact Id </th> 
-    <th>Issues Component </th> 
+    <th>GroupId</th> 
+    <th>ArtifactId</th> 
+    <th>Version</th> 
    </tr> 
   </thead> 
   <tbody> 
    <tr class="b"> 
-    <td><a href="./shared-utils-java/">Deventropy Shared Utils :: Java</a> </td> 
-    <td>Shared Java classes </td> 
-    <td><tt>shared-utils-java</tt> </td> 
-    <td><a class="externalLink" href="https://github.com/deventropy/shared-utils/labels/component%3Ashared-utils-java">component:shared-utils-java</a> </td> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-checkstyle-plugin/">maven-checkstyle-plugin</a></td> 
+    <td>2.17</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-clean-plugin/">maven-clean-plugin</a></td> 
+    <td>3.0.0</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-compiler-plugin/">maven-compiler-plugin</a></td> 
+    <td>3.5</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-deploy-plugin/">maven-deploy-plugin</a></td> 
+    <td>2.8.2</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-install-plugin/">maven-install-plugin</a></td> 
+    <td>2.5.2</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-jar-plugin/">maven-jar-plugin</a></td> 
+    <td>2.6</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-resources-plugin/">maven-resources-plugin</a></td> 
+    <td>2.7</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-site-plugin/">maven-site-plugin</a></td> 
+    <td>3.4</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/surefire/maven-surefire-plugin/">maven-surefire-plugin</a></td> 
+    <td>2.19.1</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>org.jacoco</td> 
+    <td>http://jacoco-maven-plugin</td> 
+    <td>0.7.5.201505241946</td> 
    </tr> 
   </tbody> 
  </table> 
 </div> 
 <div class="section"> 
- <h2 id="Attributions">Attributions</h2> 
- <p>See module pages for attribution information.</p> 
+ <h2 id="Project_Report_Plugins">Project Report Plugins</h2> 
+ <a name="Project_Report_Plugins"></a> 
+ <table border="0" class="bodyTable table table-striped table-hover"> 
+  <thead> 
+   <tr class="a"> 
+    <th>GroupId</th> 
+    <th>ArtifactId</th> 
+    <th>Version</th> 
+   </tr> 
+  </thead> 
+  <tbody> 
+   <tr class="b"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-changes-plugin/">maven-changes-plugin</a></td> 
+    <td>2.11</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-checkstyle-plugin/">maven-checkstyle-plugin</a></td> 
+    <td>2.17</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-javadoc-plugin/">maven-javadoc-plugin</a></td> 
+    <td>2.10.3</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/plugins/maven-pmd-plugin/">maven-pmd-plugin</a></td> 
+    <td>3.6</td> 
+   </tr> 
+   <tr class="b"> 
+    <td>org.apache.maven.plugins</td> 
+    <td><a class="externalLink" href="http://maven.apache.org/surefire/maven-surefire-report-plugin/">maven-surefire-report-plugin</a></td> 
+    <td>2.19.1</td> 
+   </tr> 
+   <tr class="a"> 
+    <td>org.jacoco</td> 
+    <td>http://jacoco-maven-plugin</td> 
+    <td>0.7.5.201505241946</td> 
+   </tr> 
+  </tbody> 
+ </table> 
 </div>
 			</div>
 		</div>
@@ -165,19 +230,8 @@ limitations under the License. -->
 				<div class="well">
 					<ul class="nav nav-list">
 						<li class="nav-header">Table of Contents</li>
-		<li class="dropdown"><a href="#deventropy_shared_utils" title="Deventropy Shared Utils">Deventropy Shared Utils <b class="caret"></b></a>
-			<ul class="nav nav-list">
-		<li class="dropdown"><a href="#Source_Code_Issue_Tracker_Binary_Distribution_etc" title="Source Code, Issue Tracker, Binary Distribution etc.">Source Code, Issue Tracker, Binary Distribution etc. <b class="caret"></b></a>
-			<ul class="nav nav-list">
-		<li><a href="#Binary_Distribution_Repository" title="Binary Distribution Repository">Binary Distribution Repository</a>
-				<li class="divider"></li>
-			</ul>
-		</li>
-		<li><a href="#Modules" title="Modules">Modules</a>
-		<li><a href="#Attributions" title="Attributions">Attributions</a>
-				<li class="divider"></li>
-			</ul>
-		</li>
+		<li><a href="#Project_Build_Plugins" title="Project Build Plugins">Project Build Plugins</a>
+		<li><a href="#Project_Report_Plugins" title="Project Report Plugins">Project Report Plugins</a>
 					</ul>
 				</div>
 			</div>
@@ -195,23 +249,30 @@ limitations under the License. -->
 				<div class="span3 bottom-nav">
 					<ul class="nav nav-list">
 						<li class="nav-header">Main</li>
-						<li class="active">
-							<a href="#" title="Home">Home</a>
+						<li >
+							<a href="../" title="Home">Home</a>
 						</li>
 						<li >
 							<a href="https://github.com/deventropy/shared-utils" title="GitHub project" class="externalLink">GitHub project</a>
 						</li>
-						<li class="nav-header">Modules</li>
+						<li class="nav-header">Shared Utils</li>
 						<li >
-							<a href="shared-utils-java/" title="Deventropy Shared Utils :: Java">Deventropy Shared Utils :: Java</a>
+							<a href="index.html" title="Home">Home</a>
+						</li>
+						<li >
+							<a href="resource-location-formats.html" title="URL Resource Formats">URL Resource Formats</a>
 						</li>
 					</ul>
 				</div>
 				<div class="span3 bottom-nav">
 					<ul class="nav nav-list">
+						<li class="nav-header">Modules</li>
+						<li >
+							<a href="./" title="Deventropy Shared Utils :: Java">Deventropy Shared Utils :: Java</a>
+						</li>
 						<li class="nav-header">Development</li>
 						<li >
-							<a href="../development.html" title="Development Guide">Development Guide</a>
+							<a href="../../development.html" title="Development Guide">Development Guide</a>
 						</li>
 						<li >
 							<a href="https://github.com/deventropy/shared-utils/issues" title="Issues" class="externalLink">Issues</a>
@@ -224,10 +285,10 @@ limitations under the License. -->
 						</li>
 						<li class="nav-header">Legal</li>
 						<li >
-							<a href="license.html" title="License">License</a>
+							<a href="../license.html" title="License">License</a>
 						</li>
 						<li >
-							<a href="../privacy.html" title="Privacy Policy">Privacy Policy</a>
+							<a href="../../privacy.html" title="Privacy Policy">Privacy Policy</a>
 						</li>
 					</ul>
 				</div>
@@ -241,7 +302,7 @@ limitations under the License. -->
 							<a href="integration.html" title="Continuous Integration">Continuous Integration</a>
 						</li>
 						<li >
-							<a href="dependency-convergence.html" title="Dependency Convergence">Dependency Convergence</a>
+							<a href="dependencies.html" title="Dependencies">Dependencies</a>
 						</li>
 						<li >
 							<a href="dependency-info.html" title="Dependency Information">Dependency Information</a>
@@ -252,8 +313,8 @@ limitations under the License. -->
 						<li >
 							<a href="distribution-management.html" title="Distribution Management">Distribution Management</a>
 						</li>
-						<li class="active">
-							<a href="#" title="About">About</a>
+						<li >
+							<a href="index.html" title="About">About</a>
 						</li>
 						<li >
 							<a href="issue-tracking.html" title="Issue Tracking">Issue Tracking</a>
@@ -262,13 +323,10 @@ limitations under the License. -->
 							<a href="license.html" title="Project License">Project License</a>
 						</li>
 						<li >
-							<a href="modules.html" title="Project Modules">Project Modules</a>
-						</li>
-						<li >
 							<a href="plugin-management.html" title="Plugin Management">Plugin Management</a>
 						</li>
-						<li >
-							<a href="plugins.html" title="Project Plugins">Project Plugins</a>
+						<li class="active">
+							<a href="#" title="Project Plugins">Project Plugins</a>
 						</li>
 						<li >
 							<a href="team-list.html" title="Project Team">Project Team</a>
@@ -311,11 +369,11 @@ limitations under the License. -->
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
 	<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-	<script src=".//js/lightbox.min.js"></script>
-	<script src=".//js/reflow-scroll.js"></script>
+	<script src="..//js/lightbox.min.js"></script>
+	<script src="..//js/reflow-scroll.js"></script>
 	<script src="http://yandex.st/highlightjs/7.5/highlight.min.js"></script>
 
-	<script src=".//js/reflow-skin.js"></script>
+	<script src="..//js/reflow-skin.js"></script>
 
 	</body>
 </html>
