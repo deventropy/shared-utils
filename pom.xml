@@ -169,7 +169,8 @@ limitations under the License.
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<bottom><![CDATA[Copyright &#169; {inceptionYear}-{currentYear} Development Entropy (deventropy.org) Contributors]]></bottom>
+					<bottom><![CDATA[Copyright &#169; ${project.inceptionYear}-{currentYear} Development Entropy (deventropy.org) Contributors]]></bottom>
+					<header><![CDATA[<em><a href="${project.url}">${project.name}</a></em> ver. ${project.version}]]></header>
 					<charset>${project.build.sourceEncoding}</charset>
 					<javadocVersion>1.7</javadocVersion>
 					<keywords>true</keywords>

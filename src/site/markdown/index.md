@@ -28,7 +28,7 @@ here to be shared across projects.
 [![Coverity Scan Status](https://scan.coverity.com/projects/7888/badge.svg)](https://scan.coverity.com/projects/deventropy-shared-utils)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.deventropy.shared-utils/shared-utils/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.deventropy.shared-utils/shared-utils)
 [![Bintray](https://img.shields.io/bintray/v/deventropy/repository/shared-utils.svg)](https://dl.bintray.com/deventropy/repository/)
-[![Dependency Status](https://www.versioneye.com/user/projects/56b9b2a2e883370039a1766a/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56b9b2a2e883370039a1766a)
+[![Dependency Status](https://www.versioneye.com/user/projects/56b9c6b5e883370120a9ddbc/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56b9c6b5e883370120a9ddbc)
 
 The [Development Entropy](../) [Shared Utils](./) project is hosted on
 GitHub. See the [GitHub project](http://github.com/deventropy/shared-utils) for source code,
@@ -46,7 +46,7 @@ issues. See the [project's Coverity scan page](https://scan.coverity.com/project
 status.
 
 The project uses [VersionEye's](https://www.versioneye.com/) free service for open source projects for tracking
-dependency and plugin versions. See the [project's VersionEye page](https://www.versioneye.com/user/projects/56b9b2a2e883370039a1766a)
+dependency and plugin versions. See the [project's VersionEye page](https://www.versioneye.com/user/projects/56b9c6b5e883370120a9ddbc)
 for the dependency status.
 
 ### Binary Distribution Repository
