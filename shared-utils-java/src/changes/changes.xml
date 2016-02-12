@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2015 JUnit Helper Contributors
+Copyright 2015 Development Entropy (deventropy.org) Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,6 +23,9 @@ limitations under the License.
 	</properties>
 	<body>
 		<release version="1.0-alpha.1" date="2099-12-31" description="Initial Release">
+			<action dev="bindul" date="2016-02-11" type="add" issue="2">
+				Directory archiver utility
+			</action>
 			<action dev="bindul" type="add" issue="1">
 				Project creation and initial utilities for JUnit Helper Derby
 			</action>

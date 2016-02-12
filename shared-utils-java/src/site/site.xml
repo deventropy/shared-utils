@@ -102,6 +102,7 @@ limitations under the License.
 		<menu name="Shared Utils" inherit="top">
 			<item name="Home" href="./index.html"/>
 			<item name="URL Resource Formats" href="./resource-location-formats.html"/>
+			<item name="Directory Archive Util Guide" href="./guide-directory-archive-util.html"/>
 		</menu>
 	</body>
 </project>
