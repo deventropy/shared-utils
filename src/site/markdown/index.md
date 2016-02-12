@@ -25,6 +25,7 @@ here to be shared across projects.
 [![License](https://img.shields.io/github/license/deventropy/shared-utils.svg)](./license.html)
 [![Build Status](https://travis-ci.org/deventropy/shared-utils.svg?branch=master)](https://travis-ci.org/deventropy/shared-utils)
 [![Coverage Status](https://coveralls.io/repos/deventropy/shared-utils/badge.svg?branch=master&amp;service=github)](https://coveralls.io/github/deventropy/shared-utils)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/c7eca2b7e7b247159301d806f2446d0b)](https://www.codacy.com/app/deventropy/shared-utils)
 [![Coverity Scan Status](https://scan.coverity.com/projects/7888/badge.svg)](https://scan.coverity.com/projects/deventropy-shared-utils)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.deventropy.shared-utils/shared-utils/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.deventropy.shared-utils/shared-utils)
 [![Bintray](https://img.shields.io/bintray/v/deventropy/repository/shared-utils.svg)](https://dl.bintray.com/deventropy/repository/)
@@ -34,20 +35,11 @@ The [Development Entropy](../) [Shared Utils](./) project is hosted on
 GitHub. See the [GitHub project](http://github.com/deventropy/shared-utils) for source code,
 [issue tracker](https://github.com/deventropy/shared-utils/issues), etc.
 
-The project uses [Travis CI's](http://travis-ci.org/) free service for open source projects for continuous integration.
-See the [project's Travis CI page](https://travis-ci.org/deventropy/shared-utils) for build status and details.
-
-The project uses [Coveralls'](http://coveralls.io/) free service for open source projects for tracking unit test
-coverage. See the [project's Coveralls page](https://coveralls.io/github/deventropy/shared-utils) for build status and
-details.
-
-The project uses [Coverity's](http://www.coverity.com/) free static analysis service for tracking static code analysis
-issues. See the [project's Coverity scan page](https://scan.coverity.com/projects/deventropy-shared-utils) for scan
-status.
-
-The project uses [VersionEye's](https://www.versioneye.com/) free service for open source projects for tracking
-dependency and plugin versions. See the [project's VersionEye page](https://www.versioneye.com/user/projects/56b9c6b5e883370120a9ddbc)
-for the dependency status.
+The project uses multiple online tools for Continuous Integration ([Travis CI](http://travis-ci.org/)), Unit Test
+Coverage ([Coveralls](http://coveralls.io/)), Static Code analysis ([Coverity](http://www.coverity.com/),
+[Codacy](https://www.codacy.com/)), Dependency and Build Plug-in version tracking ([VersionEye](https://www.versioneye.com/)).
+The services used are provided free of charge to open source projects by the owners of the services. **The badges above
+link to the project's pages on these tools.**
 
 ### Binary Distribution Repository
 

@@ -27,7 +27,11 @@ public class ArgumentCheckTest {
 
 	@Test
 	public void testNotNull () {
-		ArgumentCheck.notNull (new Object (), "test");
+		try {
+			ArgumentCheck.notNull (new Object (), "test");
+		} catch (IllegalArgumentException e) {
+			fail ("Should not have an exception here.");
+		}
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -42,7 +46,11 @@ public class ArgumentCheckTest {
 	
 	@Test
 	public void testNotNullOrEmpty () {
-		ArgumentCheck.notNullOrEmpty ("test", "test");
+		try {
+			ArgumentCheck.notNullOrEmpty ("test", "test");
+		} catch (IllegalArgumentException e) {
+			fail ("Should not have an exception here.");
+		}
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

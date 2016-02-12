@@ -78,22 +78,26 @@ public class DirectoryArchiverUtilTest {
 
 	@Test
 	public void testZipArchiveNullPrefix () throws IOException {
-		testZipArchive(null, testFileStructure01);
+		final String archiveFilePath = testZipArchive(null, testFileStructure01);
+		assertTrue("Should test as .zip file", archiveFilePath.endsWith(".zip"));
 	}
 	
 	@Test
 	public void testZipArchiveEmptyPrefix () throws IOException {
-		testZipArchive("", testFileStructure01);
+		final String archiveFilePath = testZipArchive("", testFileStructure01);
+		assertTrue("Should test as .zip file", archiveFilePath.endsWith(".zip"));
 	}
 	
 	@Test
 	public void testZipArchivePrefix () throws IOException {
-		testZipArchive("prefix/path", testFileStructure01);
+		final String archiveFilePath = testZipArchive("prefix/path", testFileStructure01);
+		assertTrue("Should test as .zip file", archiveFilePath.endsWith(".zip"));
 	}
 	
 	@Test
 	public void testZipArchiveWinPrefix () throws IOException {
-		testZipArchive("prefix\\path\\win", testFileStructure01);
+		final String archiveFilePath = testZipArchive("prefix\\path\\win", testFileStructure01);
+		assertTrue("Should test as .zip file", archiveFilePath.endsWith(".zip"));
 	}
 	
 	@Test(expected = IOException.class)
@@ -103,14 +107,15 @@ public class DirectoryArchiverUtilTest {
 		DirectoryArchiverUtil.createZipArchiveOfDirectory(archiveFile.getAbsolutePath(), rootFolder, null);
 	}
 	
-	private void testZipArchive (final String prefix, final String[] fileStructure) throws IOException {
+	private String testZipArchive (final String prefix, final String[] fileStructure) throws IOException {
 		final File rootFolder = tempFolder.newFolder();
 		createDirectoryTree(rootFolder, fileStructure);
-		final String testArchiveName = "archive-test-" + String.valueOf(random.nextInt()) + ".zip";
+		final String testArchiveName = "archive-test-" + random.nextInt() + ".zip";
 		final File archiveFile = tempFolder.newFile(testArchiveName);
 		DirectoryArchiverUtil.createZipArchiveOfDirectory(archiveFile.getAbsolutePath(), rootFolder, prefix);
 		assertTrue("Zip file should not be zero sized", archiveFile.length() > 0);
 		checkZipArchive(archiveFile, rootFolder, prefix);
+		return archiveFile.getPath();
 	}
 	
 	private void checkZipArchive (final File archiveFile, final File sourceDirectory, final String pathPrefix)
@@ -150,22 +155,26 @@ public class DirectoryArchiverUtilTest {
 	
 	@Test
 	public void testJarArchiveNullPrefix () throws IOException {
-		testJarArchive(null, testFileStructure01);
+		final String archiveFilePath = testJarArchive(null, testFileStructure01);
+		assertTrue("Should test as .jar file", archiveFilePath.endsWith(".jar"));
 	}
 	
 	@Test
 	public void testJarArchiveEmptyPrefix () throws IOException {
-		testJarArchive("", testFileStructure01);
+		final String archiveFilePath = testJarArchive("", testFileStructure01);
+		assertTrue("Should test as .jar file", archiveFilePath.endsWith(".jar"));
 	}
 	
 	@Test
 	public void testJarArchivePrefix () throws IOException {
-		testJarArchive("prefix/path", testFileStructure01);
+		final String archiveFilePath = testJarArchive("prefix/path", testFileStructure01);
+		assertTrue("Should test as .jar file", archiveFilePath.endsWith(".jar"));
 	}
 	
 	@Test
 	public void testJarArchiveWinPrefix () throws IOException {
-		testJarArchive("prefix\\path\\win", testFileStructure01);
+		final String archiveFilePath = testJarArchive("prefix\\path\\win", testFileStructure01);
+		assertTrue("Should test as .jar file", archiveFilePath.endsWith(".jar"));
 	}
 	
 	@Test(expected = IOException.class)
@@ -175,14 +184,15 @@ public class DirectoryArchiverUtilTest {
 		DirectoryArchiverUtil.createJarArchiveOfDirectory(archiveFile.getAbsolutePath(), rootFolder, null);
 	}
 	
-	private void testJarArchive (final String prefix, final String[] fileStructure) throws IOException {
+	private String testJarArchive (final String prefix, final String[] fileStructure) throws IOException {
 		final File rootFolder = tempFolder.newFolder();
 		createDirectoryTree(rootFolder, fileStructure);
-		final String testArchiveName = "archive-test-" + String.valueOf(random.nextInt()) + ".zip";
+		final String testArchiveName = "archive-test-" + random.nextInt() + ".jar";
 		final File archiveFile = tempFolder.newFile(testArchiveName);
 		DirectoryArchiverUtil.createJarArchiveOfDirectory(archiveFile.getAbsolutePath(), rootFolder, prefix);
 		assertTrue("Zip file should not be zero sized", archiveFile.length() > 0);
 		checkJarArchive(archiveFile, rootFolder, prefix);
+		return archiveFile.getPath();
 	}
 	
 	private void checkJarArchive (final File archiveFile, final File sourceDirectory, final String pathPrefix)

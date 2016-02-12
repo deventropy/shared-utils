@@ -100,7 +100,7 @@ public final class UrlResourceUtil {
 			String resourcePart = resource.substring(URL_PROTOCOL_CLASSPATH.length());
 	
 			// System and non system classloaders behave different with the starting '/', so try both
-			if (!resourcePart.startsWith("/")) {
+			if (resourcePart.length() >= 1 && resourcePart.charAt(0) != '/') {
 				resourcePart = "/" + resourcePart;
 			}
 			url = cl.getResource(resourcePart);
