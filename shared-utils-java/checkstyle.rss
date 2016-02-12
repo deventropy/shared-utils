@@ -25,9 +25,9 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2016 Development Entropy Projects</copyright>
     <item>
-      <title>File: 4,
+      <title>File: 5,
              Errors: 0,
-             Warnings: 1,
+             Warnings: 0,
              Infos: 0
       </title>
             <link>http://www.deventropy.org/shared-utils/shared-utils-java//checkstyle.html</link>
@@ -47,6 +47,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="http://www.deventropy.org/shared-utils/shared-utils-java//checkstyle.html#org.deventropy.shared.utils.ClassUtil.java">org/deventropy/shared/utils/ClassUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.deventropy.org/shared-utils/shared-utils-java//checkstyle.html#org.deventropy.shared.utils.DirectoryArchiverUtil.java">org/deventropy/shared/utils/DirectoryArchiverUtil.java</a>
                 </td>
                 <td>
                   0
@@ -94,7 +108,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  1
+                  0
                 </td>
                 <td>
                   0

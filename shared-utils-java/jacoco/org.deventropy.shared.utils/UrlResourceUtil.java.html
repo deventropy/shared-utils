@@ -100,7 +100,7 @@ public final class UrlResourceUtil {
 <span class="fc" id="L100">			String resourcePart = resource.substring(URL_PROTOCOL_CLASSPATH.length());</span>
 	
 			// System and non system classloaders behave different with the starting '/', so try both
-<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (!resourcePart.startsWith(&quot;/&quot;)) {</span>
+<span class="pc bpc" id="L103" title="1 of 4 branches missed.">			if (resourcePart.length() &gt;= 1 &amp;&amp; resourcePart.charAt(0) != '/') {</span>
 <span class="fc" id="L104">				resourcePart = &quot;/&quot; + resourcePart;</span>
 			}
 <span class="fc" id="L106">			url = cl.getResource(resourcePart);</span>

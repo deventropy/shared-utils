@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DirectoryArchiverUtil.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Deventropy Shared Utils :: Java</a> &gt; <a href="index.source.html" class="el_package">org.deventropy.shared.utils</a> &gt; <span class="el_source">DirectoryArchiverUtil.java</span></div><h1>DirectoryArchiverUtil.java</h1><pre class="source lang-java linenums">/* 
+ * Copyright 2016 Development Entropy (deventropy.org) Contributors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.deventropy.shared.utils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+/**
+ * Utility class providing convenience methods to create Zip/Jar archives for entire directories.
+ * 
+ * &lt;p&gt;The functionality implemented in this class is rudimentary at this time, and does not support:
+ * &lt;ul&gt;
+ * 	&lt;li&gt;Compression Level&lt;/li&gt;
+ * 	&lt;li&gt;Compression Method&lt;/li&gt;
+ * 	&lt;li&gt;Advanced manifest manipulation (Jar files)&lt;/li&gt;
+ * 	&lt;li&gt;Jar signing&lt;/li&gt;
+ * 	&lt;li&gt;Filtering files out&lt;/li&gt;
+ * &lt;/ul&gt;
+ * 
+ * &lt;h2&gt;Creating a Zip Archive&lt;/h2&gt;
+ * To create a zip archive from a directory &lt;code&gt;/project/data/source&lt;/code&gt; into a file
+ * &lt;code&gt;/project/data/source.zip&lt;/code&gt;, use the {@link #createZipArchiveOfDirectory(String, File, String)} as:
+ * &lt;pre&gt;
+ * DirectoryArchiverUtil.createJarArchiveOfDirectory(&quot;/project/data/source&quot;, &quot;/project/data/source.zip&quot;, null);
+ * &lt;/pre&gt;
+ * 
+ * &lt;p&gt;This will archive all the contents of the source folder recursively in the zip file created. Immediate children
+ * of the source folder will be at the root of the zip file. The current implementation does not traverse down symbolic
+ * links, and they will be excluded.
+ * 
+ * &lt;h3&gt;Nesting contents in the archive&lt;/h3&gt;
+ * The implementation supports nesting contents from the source one or more directories down in the archive file
+ * created. Working on the example above, if the code were invoked as:
+ * &lt;pre&gt;
+ * DirectoryArchiverUtil.createJarArchiveOfDirectory(&quot;/project/data/source&quot;, &quot;/project/data/source.zip&quot;, &quot;test/one&quot;);
+ * &lt;/pre&gt;
+ * 
+ * &lt;p&gt;This will cause any files or directories which were immediate children of the source folder to appear nested under
+ * directories &lt;code&gt;test/one&lt;/code&gt; in the archive (or when the archive is inflated). So
+ * &lt;code&gt;/project/data/source/file.txt&lt;/code&gt; will appear at &lt;code&gt;test/one/file.txt&lt;/code&gt; in the archive.
+ * 
+ * &lt;h2&gt;Creating a Jar Archive&lt;/h2&gt;
+ * Jar files are created almost identical to the Zip files above, with the additional functionality of a very
+ * rudimentary Manifest (&lt;code&gt;META-INF/MANIFEST.MF&lt;/code&gt;) file is added to the archive with just the Manifest Version
+ * property set.
+ * 
+ * &lt;p&gt;To create Jar files, use the {@link #createJarArchiveOfDirectory(String, File, String)} method instead.
+ * 
+ * &lt;p&gt;This class uses ideas expressed by user Gili on a StackOverflow question:
+ * &lt;a href=&quot;http://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file&quot;&gt;
+ * How to use JarOutputStream to create a JAR file?&lt;/a&gt;
+ * 
+ * @author Bindul Bhowmik
+ */
+public final class DirectoryArchiverUtil {
+	
+	private static final String DEFAULT_MANIFEST_VERSION = &quot;1.0&quot;;
+	private static final String ARCHIVE_PATH_SEPARATOR = &quot;/&quot;;
+	private static final String WIN_PATH_SEPARATOR = &quot;\\&quot;;
+	
+<span class="fc" id="L90">	private static final Logger LOG = LogManager.getLogger(DirectoryArchiverUtil.class);</span>
+
+<span class="nc" id="L92">	private DirectoryArchiverUtil () {</span>
+		// Utility class
+<span class="nc" id="L94">	}</span>
+	
+	/**
+	 * Create a zip archive with all the contents of the directory. Optionally push the contents down a directory level
+	 * or two.
+	 * 
+	 * @param archiveFile The final archive file location. The file location must be writable.
+	 * @param srcDirectory The source directory.
+	 * @param rootPathPrefix The root prefix. Multiple directory parts should be separated by &lt;code&gt;/&lt;/code&gt;.
+	 * @throws IOException Exception reading the source directory or writing to the destination file.
+	 */
+	public static void createZipArchiveOfDirectory (final String archiveFile, final File srcDirectory,
+		final String rootPathPrefix) throws IOException {
+
+<span class="fc" id="L108">		createArchiveOfDirectory(archiveFile, srcDirectory, rootPathPrefix, false);</span>
+<span class="fc" id="L109">	}</span>
+	
+	/**
+	 * Create a Jar archive with all the contents of the directory. Optionally push the contents down a directory level
+	 * or two. A Manifest file is automatically added.
+	 * 
+	 * @param archiveFile The final archive file location. The file location must be writable.
+	 * @param srcDirectory The source directory.
+	 * @param rootPathPrefix The root prefix. Multiple directory parts should be separated by &lt;code&gt;/&lt;/code&gt;.
+	 * @throws IOException Exception reading the source directory or writing to the destination file.
+	 */
+	public static void createJarArchiveOfDirectory (final String archiveFile, final File srcDirectory,
+		final String rootPathPrefix) throws IOException {
+
+<span class="fc" id="L123">		createArchiveOfDirectory(archiveFile, srcDirectory, rootPathPrefix, true);</span>
+<span class="fc" id="L124">	}</span>
+	
+	private static void createArchiveOfDirectory (final String archiveFile, final File srcDirectory,
+			final String rootPathPrefix, final boolean isJar) throws IOException {
+
+<span class="fc" id="L129">			ZipOutputStream zos = null;</span>
+			try {
+
+<span class="fc" id="L132">				final FileOutputStream archiveFileOutputStream = new FileOutputStream(archiveFile);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">				if (isJar) {</span>
+<span class="fc" id="L134">					final Manifest manifest = new Manifest();</span>
+<span class="fc" id="L135">					manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, DEFAULT_MANIFEST_VERSION);</span>
+<span class="fc" id="L136">					zos = new JarOutputStream(archiveFileOutputStream, manifest);</span>
+<span class="fc" id="L137">				} else {</span>
+<span class="fc" id="L138">					zos = new ZipOutputStream(archiveFileOutputStream);</span>
+				}
+
+<span class="fc bfc" id="L141" title="All 4 branches covered.">				final String normalizedRootPathPrefix = (null == rootPathPrefix || rootPathPrefix.isEmpty()) ? &quot;&quot;</span>
+<span class="fc" id="L142">						: normalizeName(rootPathPrefix, true);</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">				if (!normalizedRootPathPrefix.isEmpty()) {</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">					final ZipEntry entry = (isJar) ? new JarEntry(normalizedRootPathPrefix)</span>
+							: new ZipEntry(normalizedRootPathPrefix);
+<span class="fc" id="L146">					zos.putNextEntry(entry);</span>
+<span class="fc" id="L147">					zos.closeEntry();</span>
+				}
+
+<span class="fc" id="L150">				final Path srcRootPath = Paths.get(srcDirectory.toURI());</span>
+<span class="fc" id="L151">				final ArchiverFileVisitor visitor = new ArchiverFileVisitor(srcRootPath, normalizedRootPathPrefix, zos,</span>
+						isJar);
+<span class="fc" id="L153">				Files.walkFileTree(srcRootPath, visitor);</span>
+
+			} finally {
+<span class="pc bpc" id="L156" title="2 of 4 branches missed.">				if (null != zos) {</span>
+<span class="pc" id="L157">					zos.close();</span>
+				}
+			}
+<span class="fc" id="L160">		}</span>
+
+	private static String normalizeName (final String path, final boolean isDirectory) {
+<span class="fc" id="L163">		String normalizedPath = path.replace(WIN_PATH_SEPARATOR, ARCHIVE_PATH_SEPARATOR);</span>
+<span class="pc bpc" id="L164" title="1 of 4 branches missed.">		if (isDirectory &amp;&amp; !normalizedPath.endsWith(ARCHIVE_PATH_SEPARATOR)) {</span>
+<span class="fc" id="L165">			normalizedPath += ARCHIVE_PATH_SEPARATOR;</span>
+		}
+<span class="fc" id="L167">		return normalizedPath;</span>
+	}
+	
+	private static final class ArchiverFileVisitor extends SimpleFileVisitor&lt;Path&gt; {
+		private final Path sourceRootPath;
+		private final String normalizedRootPathPrefix;
+		private final ZipOutputStream zipOutputStream;
+		private final boolean isJar;
+
+		private ArchiverFileVisitor (final Path sourceRootPath, final String normalizedRootPathPrefix,
+<span class="fc" id="L177">				final ZipOutputStream zipOutputStream, final boolean isJar) {</span>
+<span class="fc" id="L178">			this.normalizedRootPathPrefix = normalizedRootPathPrefix;</span>
+<span class="fc" id="L179">			this.sourceRootPath = sourceRootPath;</span>
+<span class="fc" id="L180">			this.zipOutputStream = zipOutputStream;</span>
+<span class="fc" id="L181">			this.isJar = isJar;</span>
+<span class="fc" id="L182">		}</span>
+
+		/* (non-Javadoc)
+		 * @see java.nio.file.FileVisitor#preVisitDirectory(java.lang.Object,
+		 * 		java.nio.file.attribute.BasicFileAttributes)
+		 */
+		@Override
+		public FileVisitResult preVisitDirectory (final Path dir, final BasicFileAttributes attrs) throws IOException {
+
+			// Create a zip entry for the directory
+<span class="fc" id="L192">			final Path relativeSourcePath = sourceRootPath.relativize(dir);</span>
+<span class="pc bpc" id="L193" title="1 of 4 branches missed.">			if (null == relativeSourcePath || relativeSourcePath.toString().isEmpty()) {</span>
+				// Special case for the root
+<span class="fc" id="L195">				return FileVisitResult.CONTINUE;</span>
+			}
+
+<span class="fc" id="L198">			final String relativeDestinationPath = normalizeName(normalizedRootPathPrefix + relativeSourcePath, true);</span>
+<span class="fc" id="L199">			LOG.trace(&quot;Creating zip / jar entry for directory {} at {}&quot;, dir, relativeDestinationPath);</span>
+
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			final ZipEntry zipEntry = (isJar) ? new JarEntry(relativeDestinationPath)</span>
+					: new ZipEntry(relativeDestinationPath);
+<span class="fc" id="L203">			zipEntry.setTime(dir.toFile().lastModified());</span>
+<span class="fc" id="L204">			zipOutputStream.putNextEntry(zipEntry);</span>
+<span class="fc" id="L205">			zipOutputStream.closeEntry();</span>
+
+<span class="fc" id="L207">			return FileVisitResult.CONTINUE;</span>
+		}
+
+		/* (non-Javadoc)
+		 * @see java.nio.file.FileVisitor#visitFile(java.lang.Object, java.nio.file.attribute.BasicFileAttributes)
+		 */
+		@Override
+		public FileVisitResult visitFile (final Path file, final BasicFileAttributes attrs) throws IOException {
+
+			// Add the file to the zip
+<span class="fc" id="L217">			final Path relativeSourcePath = sourceRootPath.relativize(file);</span>
+<span class="fc" id="L218">			final String relativeDestinationPath = normalizeName(normalizedRootPathPrefix + relativeSourcePath, false);</span>
+<span class="fc" id="L219">			LOG.trace(&quot;Creating zip / jar entry for file {} at {}&quot;, file, relativeDestinationPath);</span>
+
+<span class="fc bfc" id="L221" title="All 2 branches covered.">			final ZipEntry zipEntry = (isJar) ? new JarEntry(relativeDestinationPath)</span>
+					: new ZipEntry(relativeDestinationPath);
+<span class="fc" id="L223">			zipEntry.setTime(file.toFile().lastModified());</span>
+<span class="fc" id="L224">			zipOutputStream.putNextEntry(zipEntry);</span>
+<span class="fc" id="L225">			Files.copy(file, zipOutputStream);</span>
+<span class="fc" id="L226">			zipOutputStream.closeEntry();</span>
+
+<span class="fc" id="L228">			return FileVisitResult.CONTINUE;</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

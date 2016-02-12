@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>Project Summary | Deventropy Shared Utils :: Java</title>
+		<title>Directory Archive Util Guide | Deventropy Shared Utils :: Java</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -35,7 +35,7 @@
 <link rel="author" href="http://blog.bindul.name/"/>
 	</head>
 
-	<body class="page-project-summary project-shared-utils-java" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-guide-directory-archive-util project-shared-utils-java" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
@@ -56,12 +56,12 @@
 									<li ><a href="./" title="Deventropy Shared Utils :: Java">Deventropy Shared Utils :: Java</a></li>
 								</ul>
 							</li>
-							<li class="dropdown">
+							<li class="dropdown active">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Shared Utils <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li ><a href="index.html" title="Home">Home</a></li>
 									<li ><a href="resource-location-formats.html" title="URL Resource Formats">URL Resource Formats</a></li>
-									<li ><a href="guide-directory-archive-util.html" title="Directory Archive Util Guide">Directory Archive Util Guide</a></li>
+									<li class="active"><a href="" title="Directory Archive Util Guide">Directory Archive Util Guide</a></li>
 								</ul>
 							</li>
 							<li class="dropdown">
@@ -103,7 +103,7 @@
 				<li class="divider">/</li>
 				<li><a href="./" title="Deventropy Shared Utils :: Java">Deventropy Shared Utils :: Java</a></li>
 				<li class="divider">/</li>
-				<li>Project Summary</li>
+				<li>Directory Archive Util Guide</li>
 			</ul>
 		</div>
 	</header>
@@ -112,93 +112,56 @@
 	<div class="row">
 		<div class="span8">
 			<div class="body-content">
+<!-- Copyright 2015 Development Entropy (deventropy.org) Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. --> 
+<div class="page-header">
+ <h1 id="directory_archive_util_guide">Directory Archive Util Guide</h1>
+</div> 
+<p>This utility class (<tt>DirectoryArchiverUtil</tt>) providing convenience methods to create Zip/Jar archives for entire directories. The functionality implemented in this class is rudimentary at this time, and does not support:</p> 
+<ul> 
+ <li>Compression Level</li> 
+ <li>Compression Method</li> 
+ <li>Advanced manifest manipulation (Jar files)</li> 
+ <li>Jar signing</li> 
+ <li>Filtering files out</li> 
+</ul> 
 <div class="section"> 
- <div class="page-header">
-  <h2 id="Project_Summary">Project Summary</h2>
+ <h2 id="Creating_a_Zip_Archive">Creating a Zip Archive</h2> 
+ <p>To create a zip archive from a directory <tt>/project/data/source</tt> into a file <tt>/project/data/source.zip</tt>, use the <a href="./apidocs/org/deventropy/shared/utils/DirectoryArchiverUtil.html#createJarArchiveOfDirectory-java.lang.String-java.io.File-java.lang.String-">createZipArchiveOfDirectory(String, File, String)</a> method as:</p> 
+ <div class="source"> 
+  <div class="source"> 
+   <pre>DirectoryArchiverUtil.createJarArchiveOfDirectory(&quot;/project/data/source&quot;, &quot;/project/data/source.zip&quot;, null);
+</pre> 
+  </div> 
  </div> 
- <a name="Project_Summary"></a> 
+ <p>This will archive all the contents of the source folder recursively in the zip file created. Immediate children of the source folder will be at the root of the zip file. The current implementation does not traverse down symbolic links, and they will be excluded.</p> 
  <div class="section"> 
-  <h3 id="Project_Information">Project Information</h3> 
-  <a name="Project_Information"></a> 
-  <table border="0" class="bodyTable table table-striped table-hover"> 
-   <thead> 
-    <tr class="a"> 
-     <th>Field</th> 
-     <th>Value</th> 
-    </tr> 
-   </thead> 
-   <tbody> 
-    <tr class="b"> 
-     <td>Name</td> 
-     <td>Deventropy Shared Utils :: Java</td> 
-    </tr> 
-    <tr class="a"> 
-     <td>Description</td> 
-     <td>Shared Java classes for Deventropy projects</td> 
-    </tr> 
-    <tr class="b"> 
-     <td>Homepage</td> 
-     <td><a class="externalLink" href="http://www.deventropy.org/shared-utils/shared-utils-java/">http://www.deventropy.org/shared-utils/shared-utils-java/</a></td> 
-    </tr> 
-   </tbody> 
-  </table> 
+  <h3 id="Nesting_contents_in_the_archive">Nesting contents in the archive</h3> 
+  <p>The implementation supports nesting contents from the source one or more directories down in the archive file created. Working on the example above, if the code were invoked as:</p> 
+  <div class="source"> 
+   <div class="source"> 
+    <pre>DirectoryArchiverUtil.createJarArchiveOfDirectory(&quot;/project/data/source&quot;, &quot;/project/data/source.zip&quot;, &quot;test/one&quot;);
+</pre> 
+   </div> 
+  </div> 
+  <p>This will cause any files or directories which were immediate children of the source folder to appear nested under directories <tt>test/one</tt> in the archive (or when the archive is inflated). So <tt>/project/data/source/file.txt</tt> will appear at <tt>test/one/file.txt</tt> in the archive.</p> 
  </div> 
- <div class="section"> 
-  <h3 id="Project_Organization">Project Organization</h3> 
-  <a name="Project_Organization"></a> 
-  <table border="0" class="bodyTable table table-striped table-hover"> 
-   <thead> 
-    <tr class="a"> 
-     <th>Field</th> 
-     <th>Value</th> 
-    </tr> 
-   </thead> 
-   <tbody> 
-    <tr class="b"> 
-     <td>Name</td> 
-     <td>Development Entropy Projects</td> 
-    </tr> 
-    <tr class="a"> 
-     <td>URL</td> 
-     <td><a class="externalLink" href="http://www.deventropy.org/">http://www.deventropy.org/</a></td> 
-    </tr> 
-   </tbody> 
-  </table> 
- </div> 
- <div class="section"> 
-  <h3 id="Build_Information">Build Information</h3> 
-  <a name="Build_Information"></a> 
-  <table border="0" class="bodyTable table table-striped table-hover"> 
-   <thead> 
-    <tr class="a"> 
-     <th>Field</th> 
-     <th>Value</th> 
-    </tr> 
-   </thead> 
-   <tbody> 
-    <tr class="b"> 
-     <td>GroupId</td> 
-     <td>org.deventropy.shared-utils</td> 
-    </tr> 
-    <tr class="a"> 
-     <td>ArtifactId</td> 
-     <td>shared-utils-java</td> 
-    </tr> 
-    <tr class="b"> 
-     <td>Version</td> 
-     <td>1.0-alpha.1-SNAPSHOT</td> 
-    </tr> 
-    <tr class="a"> 
-     <td>Type</td> 
-     <td>jar</td> 
-    </tr> 
-    <tr class="b"> 
-     <td>Java Version</td> 
-     <td>1.7</td> 
-    </tr> 
-   </tbody> 
-  </table> 
- </div> 
+</div> 
+<div class="section"> 
+ <h2 id="Creating_a_Jar_Archive">Creating a Jar Archive</h2> 
+ <p>Jar files are created almost identical to the Zip files above, with the additional functionality of a very rudimentary Manifest (<tt>META-INF/MANIFEST.MF</tt>) file is added to the archive with just the Manifest Version property set.</p> 
+ <p>To create Jar files, use the <a href="./apidocs/org/deventropy/shared/utils/DirectoryArchiverUtil.html#createZipArchiveOfDirectory-java.lang.String-java.io.File-java.lang.String-">createJarArchiveOfDirectory(String, File, String)</a> method instead.</p> 
 </div>
 			</div>
 		</div>
@@ -207,11 +170,15 @@
 				<div class="well">
 					<ul class="nav nav-list">
 						<li class="nav-header">Table of Contents</li>
-		<li class="dropdown"><a href="#Project_Summary" title="Project Summary">Project Summary <b class="caret"></b></a>
+		<li class="dropdown"><a href="#directory_archive_util_guide" title="Directory Archive Util Guide">Directory Archive Util Guide <b class="caret"></b></a>
 			<ul class="nav nav-list">
-		<li><a href="#Project_Information" title="Project Information">Project Information</a>
-		<li><a href="#Project_Organization" title="Project Organization">Project Organization</a>
-		<li><a href="#Build_Information" title="Build Information">Build Information</a>
+		<li class="dropdown"><a href="#Creating_a_Zip_Archive" title="Creating a Zip Archive">Creating a Zip Archive <b class="caret"></b></a>
+			<ul class="nav nav-list">
+		<li><a href="#Nesting_contents_in_the_archive" title="Nesting contents in the archive">Nesting contents in the archive</a>
+				<li class="divider"></li>
+			</ul>
+		</li>
+		<li><a href="#Creating_a_Jar_Archive" title="Creating a Jar Archive">Creating a Jar Archive</a>
 				<li class="divider"></li>
 			</ul>
 		</li>
@@ -245,8 +212,8 @@
 						<li >
 							<a href="resource-location-formats.html" title="URL Resource Formats">URL Resource Formats</a>
 						</li>
-						<li >
-							<a href="guide-directory-archive-util.html" title="Directory Archive Util Guide">Directory Archive Util Guide</a>
+						<li class="active">
+							<a href="#" title="Directory Archive Util Guide">Directory Archive Util Guide</a>
 						</li>
 					</ul>
 				</div>
@@ -281,49 +248,8 @@
 				<div class="span3 bottom-nav">
 					<ul class="nav nav-list">
 						<li class="nav-header">Maven documentation</li>
-						<li class="active">
-							<a href="project-info.html" title="Project Information">Project Information <i class="icon-chevron-down"></i></a>
-							<ul class="nav nav-list">
 						<li >
-							<a href="integration.html" title="Continuous Integration">Continuous Integration</a>
-						</li>
-						<li >
-							<a href="dependencies.html" title="Dependencies">Dependencies</a>
-						</li>
-						<li >
-							<a href="dependency-info.html" title="Dependency Information">Dependency Information</a>
-						</li>
-						<li >
-							<a href="dependency-management.html" title="Dependency Management">Dependency Management</a>
-						</li>
-						<li >
-							<a href="distribution-management.html" title="Distribution Management">Distribution Management</a>
-						</li>
-						<li >
-							<a href="index.html" title="About">About</a>
-						</li>
-						<li >
-							<a href="issue-tracking.html" title="Issue Tracking">Issue Tracking</a>
-						</li>
-						<li >
-							<a href="license.html" title="Project License">Project License</a>
-						</li>
-						<li >
-							<a href="plugin-management.html" title="Plugin Management">Plugin Management</a>
-						</li>
-						<li >
-							<a href="plugins.html" title="Project Plugins">Project Plugins</a>
-						</li>
-						<li >
-							<a href="team-list.html" title="Project Team">Project Team</a>
-						</li>
-						<li >
-							<a href="source-repository.html" title="Source Repository">Source Repository</a>
-						</li>
-						<li class="active">
-							<a href="#" title="Project Summary">Project Summary</a>
-						</li>
-							</ul>
+							<a href="project-info.html" title="Project Information">Project Information <i class="icon-chevron-right"></i></a>
 						</li>
 						<li >
 							<a href="project-reports.html" title="Project Reports">Project Reports <i class="icon-chevron-right"></i></a>

@@ -1,4 +1,6 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-Deventropy Shared Utils :: Java,org.deventropy.shared.utils,UrlResourceUtil,3,142,1,15,2,31,2,12,1,5
+Deventropy Shared Utils :: Java,org.deventropy.shared.utils,DirectoryArchiverUtil,5,131,3,15,2,29,4,11,1,5
+Deventropy Shared Utils :: Java,org.deventropy.shared.utils,UrlResourceUtil,3,147,2,16,2,31,3,12,1,5
+Deventropy Shared Utils :: Java,org.deventropy.shared.utils,DirectoryArchiverUtil.ArchiverFileVisitor,0,143,1,7,0,25,1,6,0,3
 Deventropy Shared Utils :: Java,org.deventropy.shared.utils,ArgumentCheck,3,39,1,7,2,6,2,5,1,2
 Deventropy Shared Utils :: Java,org.deventropy.shared.utils,ClassUtil,5,35,1,7,3,13,2,5,1,2
