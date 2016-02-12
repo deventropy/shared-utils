@@ -28,7 +28,7 @@ public class ArgumentCheckTest {
 	@Test
 	public void testNotNull () {
 		try {
-			ArgumentCheck.notNull (new Object (), "test");
+			ArgumentCheck.notNull (new Object (), "test1");
 		} catch (IllegalArgumentException e) {
 			fail ("Should not have an exception here.");
 		}
@@ -37,9 +37,9 @@ public class ArgumentCheckTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testNotNullFail () {
 		try {
-			ArgumentCheck.notNull (null, "test");
+			ArgumentCheck.notNull (null, "test2");
 		} catch (IllegalArgumentException e) {
-			assertEquals ("test is required and cannot be null", e.getMessage ());
+			assertEquals ("test2 is required and cannot be null", e.getMessage ());
 			throw e;
 		}
 	}
@@ -47,7 +47,7 @@ public class ArgumentCheckTest {
 	@Test
 	public void testNotNullOrEmpty () {
 		try {
-			ArgumentCheck.notNullOrEmpty ("test", "test");
+			ArgumentCheck.notNullOrEmpty ("test3", "test4");
 		} catch (IllegalArgumentException e) {
 			fail ("Should not have an exception here.");
 		}
@@ -56,9 +56,9 @@ public class ArgumentCheckTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testNotNullOrEmptyFail () {
 		try {
-			ArgumentCheck.notNullOrEmpty ("", "test");
+			ArgumentCheck.notNullOrEmpty ("", "test5");
 		} catch (IllegalArgumentException e) {
-			assertEquals ("test is required and cannot be null or empty", e.getMessage ());
+			assertEquals ("test5 is required and cannot be null or empty", e.getMessage ());
 			throw e;
 		}
 	}
@@ -66,9 +66,9 @@ public class ArgumentCheckTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testNotNullOrEmptyFailWhitespace () {
 		try {
-			ArgumentCheck.notNullOrEmpty (" ", "test");
+			ArgumentCheck.notNullOrEmpty (" ", "test6");
 		} catch (IllegalArgumentException e) {
-			assertEquals ("test is required and cannot be null or empty", e.getMessage ());
+			assertEquals ("test6 is required and cannot be null or empty", e.getMessage ());
 			throw e;
 		}
 	}
