@@ -25,7 +25,7 @@ branches:
 
 before_install:
     - "git clone -b travis ${DENT_TRAVIS_MVN_SETTINGS_REPO} target/travis"
-    - 'mkdir --parents target/jpm && curl -sL http://bit.ly/jpm4j > target/jpm/jpm4j.jar && java -jar target/jpm/jpm4j.jar -u init && jpm install com.codacy:codacy-coverage-reporter:assembly'
+    - 'mkdir --parents target/jpm && curl -sL http://bit.ly/jpm4j > target/jpm/jpm4j.jar && java -jar target/jpm/jpm4j.jar -u init && export PATH=$PATH:$HOME/jpm/bin && jpm install com.codacy:codacy-coverage-reporter:assembly'
 
 install: "mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V --settings target/travis/travis-mvn-settings.xml"
 
