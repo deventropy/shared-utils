@@ -281,11 +281,12 @@ public final class DirectoryArchiverUtil {
 	
 	private static class ArchiverCreateProcessor {
 
-		OutputStream decorateFileOutputStream (final FileOutputStream archiveFileOutputStream) throws IOException {
+		protected OutputStream decorateFileOutputStream (final FileOutputStream archiveFileOutputStream)
+				throws IOException {
 			return archiveFileOutputStream;
 		}
 
-		void processArchiverPostCreate (final ArchiveOutputStream archiveOutputStream, final String charset)
+		protected void processArchiverPostCreate (final ArchiveOutputStream archiveOutputStream, final String charset)
 				throws IOException {
 			// Default implementation does nothing.
 		}
@@ -294,7 +295,7 @@ public final class DirectoryArchiverUtil {
 	private static class JarArchiverCreateProcessor extends ArchiverCreateProcessor {
 
 		@Override
-		void processArchiverPostCreate (final ArchiveOutputStream archiveOutputStream, final String charset)
+		protected void processArchiverPostCreate (final ArchiveOutputStream archiveOutputStream, final String charset)
 				throws IOException {
 			super.processArchiverPostCreate(archiveOutputStream, charset);
 
@@ -312,12 +313,13 @@ public final class DirectoryArchiverUtil {
 
 		private final String compressor;
 
-		TarArchiverCreateProcessor (final String compressor) {
+		protected TarArchiverCreateProcessor (final String compressor) {
 			this.compressor = compressor;
 		}
 
 		@Override
-		OutputStream decorateFileOutputStream (final FileOutputStream archiveFileOutputStream) throws IOException {
+		protected OutputStream decorateFileOutputStream (final FileOutputStream archiveFileOutputStream)
+				throws IOException {
 			OutputStream returnStream = super.decorateFileOutputStream(archiveFileOutputStream);
 
 			if (null != compressor) {
@@ -333,7 +335,7 @@ public final class DirectoryArchiverUtil {
 		}
 
 		@Override
-		void processArchiverPostCreate (final ArchiveOutputStream archiveOutputStream, final String charset)
+		protected void processArchiverPostCreate (final ArchiveOutputStream archiveOutputStream, final String charset)
 				throws IOException {
 			super.processArchiverPostCreate(archiveOutputStream, charset);
 			final TarArchiveOutputStream tarArchiveOutputStream = (TarArchiveOutputStream) archiveOutputStream;
