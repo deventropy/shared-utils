@@ -15,9 +15,11 @@
  */
 package org.deventropy.shared.utils;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,12 +27,18 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.compress.utils.Charsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -86,12 +94,13 @@ public final class DirectoryArchiverUtil {
 	private static final String DEFAULT_MANIFEST_VERSION = &quot;1.0&quot;;
 	private static final String ARCHIVE_PATH_SEPARATOR = &quot;/&quot;;
 	private static final String WIN_PATH_SEPARATOR = &quot;\\&quot;;
+<span class="fc" id="L97">	private static final String UTF_8_NAME = Charsets.UTF_8.name();</span>
 	
-<span class="fc" id="L90">	private static final Logger LOG = LogManager.getLogger(DirectoryArchiverUtil.class);</span>
+<span class="fc" id="L99">	private static final Logger LOG = LogManager.getLogger(DirectoryArchiverUtil.class);</span>
 
-<span class="nc" id="L92">	private DirectoryArchiverUtil () {</span>
+<span class="nc" id="L101">	private DirectoryArchiverUtil () {</span>
 		// Utility class
-<span class="nc" id="L94">	}</span>
+<span class="nc" id="L103">	}</span>
 	
 	/**
 	 * Create a zip archive with all the contents of the directory. Optionally push the contents down a directory level
@@ -105,8 +114,8 @@ public final class DirectoryArchiverUtil {
 	public static void createZipArchiveOfDirectory (final String archiveFile, final File srcDirectory,
 		final String rootPathPrefix) throws IOException {
 
-<span class="fc" id="L108">		createArchiveOfDirectory(archiveFile, srcDirectory, rootPathPrefix, false);</span>
-<span class="fc" id="L109">	}</span>
+<span class="fc" id="L117">		createArchiveOfDirectory(archiveFile, srcDirectory, rootPathPrefix, ArchiveStreamFactory.ZIP, UTF_8_NAME, null);</span>
+<span class="fc" id="L118">	}</span>
 	
 	/**
 	 * Create a Jar archive with all the contents of the directory. Optionally push the contents down a directory level
@@ -120,66 +129,109 @@ public final class DirectoryArchiverUtil {
 	public static void createJarArchiveOfDirectory (final String archiveFile, final File srcDirectory,
 		final String rootPathPrefix) throws IOException {
 
-<span class="fc" id="L123">		createArchiveOfDirectory(archiveFile, srcDirectory, rootPathPrefix, true);</span>
-<span class="fc" id="L124">	}</span>
+<span class="fc" id="L132">		createArchiveOfDirectory(archiveFile, srcDirectory, rootPathPrefix, ArchiveStreamFactory.JAR, UTF_8_NAME,</span>
+				new JarArchiverCreateProcessor());
+<span class="fc" id="L134">	}</span>
+	
+	/**
+	 * Create a tar archive with all the contents of the directory. Optionally push the contents down a directory level
+	 * or two.
+	 * 
+	 * @param archiveFile The final archive file location. The file location must be writable.
+	 * @param srcDirectory The source directory.
+	 * @param rootPathPrefix The root prefix. Multiple directory parts should be separated by &lt;code&gt;/&lt;/code&gt;.
+	 * @throws IOException Exception reading the source directory or writing to the destination file.
+	 */
+	public static void createTarArchiveOfDirectory (final String archiveFile, final File srcDirectory,
+		final String rootPathPrefix) throws IOException {
+
+<span class="fc" id="L148">		createArchiveOfDirectory(archiveFile, srcDirectory, rootPathPrefix, ArchiveStreamFactory.TAR, null,</span>
+				new TarArchiverCreateProcessor(null));
+<span class="fc" id="L150">	}</span>
+	
+	/**
+	 * Create a GZipped tar archive with all the contents of the directory. Optionally push the contents down a
+	 * directory level or two.
+	 * 
+	 * @param archiveFile The final archive file location. The file location must be writable.
+	 * @param srcDirectory The source directory.
+	 * @param rootPathPrefix The root prefix. Multiple directory parts should be separated by &lt;code&gt;/&lt;/code&gt;.
+	 * @throws IOException Exception reading the source directory or writing to the destination file.
+	 */
+	public static void createGZippedTarArchiveOfDirectory (final String archiveFile, final File srcDirectory,
+		final String rootPathPrefix) throws IOException {
+
+<span class="fc" id="L164">		createArchiveOfDirectory(archiveFile, srcDirectory, rootPathPrefix, ArchiveStreamFactory.TAR, null,</span>
+				new TarArchiverCreateProcessor(CompressorStreamFactory.GZIP));
+<span class="fc" id="L166">	}</span>
 	
 	private static void createArchiveOfDirectory (final String archiveFile, final File srcDirectory,
-			final String rootPathPrefix, final boolean isJar) throws IOException {
+			final String rootPathPrefix, final String archiveStreamFactoryConstant, final String encoding,
+			final ArchiverCreateProcessor archiverCreateProcessorIn) throws IOException {
 
-<span class="fc" id="L129">			ZipOutputStream zos = null;</span>
-			try {
+		/*
+		 * NOTE ON CHARSET ENCODING: Traditionally the ZIP archive format uses CodePage 437 as encoding for file name,
+		 * which is not sufficient for many international character sets.
+		 * Over time different archivers have chosen different ways to work around the limitation - the java.util.zip
+		 * packages simply uses UTF-8 as its encoding for example.
+		 * Ant has been offering the encoding attribute of the zip and unzip task as a way to explicitly specify the
+		 * encoding to use (or expect) since Ant 1.4. It defaults to the platform's default encoding for zip and UTF-8
+		 * for jar and other jar-like tasks (war, ear, ...) as well as the unzip family of tasks.
+		 */
+<span class="fc bfc" id="L181" title="All 2 branches covered.">		final ArchiverCreateProcessor archiveCreateProcessor = (null != archiverCreateProcessorIn)</span>
+				? archiverCreateProcessorIn : new ArchiverCreateProcessor();
+<span class="fc" id="L183">		ArchiveOutputStream aos = null;</span>
+		try {
 
-<span class="fc" id="L132">				final FileOutputStream archiveFileOutputStream = new FileOutputStream(archiveFile);</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">				if (isJar) {</span>
-<span class="fc" id="L134">					final Manifest manifest = new Manifest();</span>
-<span class="fc" id="L135">					manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, DEFAULT_MANIFEST_VERSION);</span>
-<span class="fc" id="L136">					zos = new JarOutputStream(archiveFileOutputStream, manifest);</span>
-<span class="fc" id="L137">				} else {</span>
-<span class="fc" id="L138">					zos = new ZipOutputStream(archiveFileOutputStream);</span>
-				}
+<span class="fc" id="L186">			final ArchiveStreamFactory archiveStreamFactory = new ArchiveStreamFactory(encoding);</span>
+<span class="fc" id="L187">			final FileOutputStream archiveFileOutputStream = new FileOutputStream(archiveFile);</span>
+<span class="fc" id="L188">			final OutputStream decoratedArchiveFileOutputStream = archiveCreateProcessor</span>
+<span class="fc" id="L189">					.decorateFileOutputStream(archiveFileOutputStream);</span>
+<span class="fc" id="L190">			aos = archiveStreamFactory.createArchiveOutputStream(archiveStreamFactoryConstant,</span>
+					decoratedArchiveFileOutputStream);
+<span class="fc" id="L192">			archiveCreateProcessor.processArchiverPostCreate(aos, encoding);</span>
 
-<span class="fc bfc" id="L141" title="All 4 branches covered.">				final String normalizedRootPathPrefix = (null == rootPathPrefix || rootPathPrefix.isEmpty()) ? &quot;&quot;</span>
-<span class="fc" id="L142">						: normalizeName(rootPathPrefix, true);</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">				if (!normalizedRootPathPrefix.isEmpty()) {</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">					final ZipEntry entry = (isJar) ? new JarEntry(normalizedRootPathPrefix)</span>
-							: new ZipEntry(normalizedRootPathPrefix);
-<span class="fc" id="L146">					zos.putNextEntry(entry);</span>
-<span class="fc" id="L147">					zos.closeEntry();</span>
-				}
-
-<span class="fc" id="L150">				final Path srcRootPath = Paths.get(srcDirectory.toURI());</span>
-<span class="fc" id="L151">				final ArchiverFileVisitor visitor = new ArchiverFileVisitor(srcRootPath, normalizedRootPathPrefix, zos,</span>
-						isJar);
-<span class="fc" id="L153">				Files.walkFileTree(srcRootPath, visitor);</span>
-
-			} finally {
-<span class="pc bpc" id="L156" title="2 of 4 branches missed.">				if (null != zos) {</span>
-<span class="pc" id="L157">					zos.close();</span>
-				}
+<span class="fc bfc" id="L194" title="All 4 branches covered.">			final String normalizedRootPathPrefix = (null == rootPathPrefix || rootPathPrefix.isEmpty()) ? &quot;&quot;</span>
+<span class="fc" id="L195">					: normalizeName(rootPathPrefix, true);</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			if (!normalizedRootPathPrefix.isEmpty()) {</span>
+<span class="fc" id="L197">				final ArchiveEntry archiveEntry = aos.createArchiveEntry(srcDirectory, normalizedRootPathPrefix);</span>
+<span class="fc" id="L198">				aos.putArchiveEntry(archiveEntry);</span>
+<span class="fc" id="L199">				aos.closeArchiveEntry();</span>
 			}
-<span class="fc" id="L160">		}</span>
+
+<span class="fc" id="L202">			final Path srcRootPath = Paths.get(srcDirectory.toURI());</span>
+<span class="fc" id="L203">			final ArchiverFileVisitor visitor = new ArchiverFileVisitor(srcRootPath, normalizedRootPathPrefix, aos);</span>
+<span class="fc" id="L204">			Files.walkFileTree(srcRootPath, visitor);</span>
+
+<span class="fc" id="L206">			aos.flush();</span>
+<span class="fc" id="L207">		} catch (ArchiveException e) {</span>
+<span class="fc" id="L208">			throw new IOException(&quot;Error creating archive&quot;, e);</span>
+		} finally {
+<span class="pc bpc" id="L210" title="2 of 4 branches missed.">			if (null != aos) {</span>
+<span class="pc" id="L211">				aos.close();</span>
+			}
+		}
+<span class="fc" id="L214">	}</span>
 
 	private static String normalizeName (final String path, final boolean isDirectory) {
-<span class="fc" id="L163">		String normalizedPath = path.replace(WIN_PATH_SEPARATOR, ARCHIVE_PATH_SEPARATOR);</span>
-<span class="pc bpc" id="L164" title="1 of 4 branches missed.">		if (isDirectory &amp;&amp; !normalizedPath.endsWith(ARCHIVE_PATH_SEPARATOR)) {</span>
-<span class="fc" id="L165">			normalizedPath += ARCHIVE_PATH_SEPARATOR;</span>
+<span class="fc" id="L217">		String normalizedPath = path.replace(WIN_PATH_SEPARATOR, ARCHIVE_PATH_SEPARATOR);</span>
+<span class="pc bpc" id="L218" title="1 of 4 branches missed.">		if (isDirectory &amp;&amp; !normalizedPath.endsWith(ARCHIVE_PATH_SEPARATOR)) {</span>
+<span class="fc" id="L219">			normalizedPath += ARCHIVE_PATH_SEPARATOR;</span>
 		}
-<span class="fc" id="L167">		return normalizedPath;</span>
+<span class="fc" id="L221">		return normalizedPath;</span>
 	}
 	
 	private static final class ArchiverFileVisitor extends SimpleFileVisitor&lt;Path&gt; {
 		private final Path sourceRootPath;
 		private final String normalizedRootPathPrefix;
-		private final ZipOutputStream zipOutputStream;
-		private final boolean isJar;
+		private final ArchiveOutputStream archiveOutputStream;
 
 		private ArchiverFileVisitor (final Path sourceRootPath, final String normalizedRootPathPrefix,
-<span class="fc" id="L177">				final ZipOutputStream zipOutputStream, final boolean isJar) {</span>
-<span class="fc" id="L178">			this.normalizedRootPathPrefix = normalizedRootPathPrefix;</span>
-<span class="fc" id="L179">			this.sourceRootPath = sourceRootPath;</span>
-<span class="fc" id="L180">			this.zipOutputStream = zipOutputStream;</span>
-<span class="fc" id="L181">			this.isJar = isJar;</span>
-<span class="fc" id="L182">		}</span>
+<span class="fc" id="L230">				final ArchiveOutputStream archiveOutputStream) {</span>
+<span class="fc" id="L231">			this.normalizedRootPathPrefix = normalizedRootPathPrefix;</span>
+<span class="fc" id="L232">			this.sourceRootPath = sourceRootPath;</span>
+<span class="fc" id="L233">			this.archiveOutputStream = archiveOutputStream;</span>
+<span class="fc" id="L234">		}</span>
 
 		/* (non-Javadoc)
 		 * @see java.nio.file.FileVisitor#preVisitDirectory(java.lang.Object,
@@ -189,22 +241,21 @@ public final class DirectoryArchiverUtil {
 		public FileVisitResult preVisitDirectory (final Path dir, final BasicFileAttributes attrs) throws IOException {
 
 			// Create a zip entry for the directory
-<span class="fc" id="L192">			final Path relativeSourcePath = sourceRootPath.relativize(dir);</span>
-<span class="pc bpc" id="L193" title="1 of 4 branches missed.">			if (null == relativeSourcePath || relativeSourcePath.toString().isEmpty()) {</span>
+<span class="fc" id="L244">			final Path relativeSourcePath = sourceRootPath.relativize(dir);</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">			if (relativeSourcePath.toString().isEmpty()) { // Per documentation in Path, the relative path is not NULL</span>
 				// Special case for the root
-<span class="fc" id="L195">				return FileVisitResult.CONTINUE;</span>
+<span class="fc" id="L247">				return FileVisitResult.CONTINUE;</span>
 			}
 
-<span class="fc" id="L198">			final String relativeDestinationPath = normalizeName(normalizedRootPathPrefix + relativeSourcePath, true);</span>
-<span class="fc" id="L199">			LOG.trace(&quot;Creating zip / jar entry for directory {} at {}&quot;, dir, relativeDestinationPath);</span>
+<span class="fc" id="L250">			final String relativeDestinationPath = normalizeName(normalizedRootPathPrefix + relativeSourcePath, true);</span>
+<span class="fc" id="L251">			LOG.trace(&quot;Creating zip / jar entry for directory {} at {}&quot;, dir, relativeDestinationPath);</span>
 
-<span class="fc bfc" id="L201" title="All 2 branches covered.">			final ZipEntry zipEntry = (isJar) ? new JarEntry(relativeDestinationPath)</span>
-					: new ZipEntry(relativeDestinationPath);
-<span class="fc" id="L203">			zipEntry.setTime(dir.toFile().lastModified());</span>
-<span class="fc" id="L204">			zipOutputStream.putNextEntry(zipEntry);</span>
-<span class="fc" id="L205">			zipOutputStream.closeEntry();</span>
+<span class="fc" id="L253">			final ArchiveEntry archiveEntry = archiveOutputStream.createArchiveEntry(dir.toFile(),</span>
+					relativeDestinationPath);
+<span class="fc" id="L255">			archiveOutputStream.putArchiveEntry(archiveEntry);</span>
+<span class="fc" id="L256">			archiveOutputStream.closeArchiveEntry();</span>
 
-<span class="fc" id="L207">			return FileVisitResult.CONTINUE;</span>
+<span class="fc" id="L258">			return FileVisitResult.CONTINUE;</span>
 		}
 
 		/* (non-Javadoc)
@@ -214,19 +265,83 @@ public final class DirectoryArchiverUtil {
 		public FileVisitResult visitFile (final Path file, final BasicFileAttributes attrs) throws IOException {
 
 			// Add the file to the zip
-<span class="fc" id="L217">			final Path relativeSourcePath = sourceRootPath.relativize(file);</span>
-<span class="fc" id="L218">			final String relativeDestinationPath = normalizeName(normalizedRootPathPrefix + relativeSourcePath, false);</span>
-<span class="fc" id="L219">			LOG.trace(&quot;Creating zip / jar entry for file {} at {}&quot;, file, relativeDestinationPath);</span>
+<span class="fc" id="L268">			final Path relativeSourcePath = sourceRootPath.relativize(file);</span>
+<span class="fc" id="L269">			final String relativeDestinationPath = normalizeName(normalizedRootPathPrefix + relativeSourcePath, false);</span>
+<span class="fc" id="L270">			LOG.trace(&quot;Creating zip / jar entry for file {} at {}&quot;, file, relativeDestinationPath);</span>
 
-<span class="fc bfc" id="L221" title="All 2 branches covered.">			final ZipEntry zipEntry = (isJar) ? new JarEntry(relativeDestinationPath)</span>
-					: new ZipEntry(relativeDestinationPath);
-<span class="fc" id="L223">			zipEntry.setTime(file.toFile().lastModified());</span>
-<span class="fc" id="L224">			zipOutputStream.putNextEntry(zipEntry);</span>
-<span class="fc" id="L225">			Files.copy(file, zipOutputStream);</span>
-<span class="fc" id="L226">			zipOutputStream.closeEntry();</span>
+<span class="fc" id="L272">			final ArchiveEntry archiveEntry = archiveOutputStream.createArchiveEntry(file.toFile(),</span>
+					relativeDestinationPath);
+<span class="fc" id="L274">			archiveOutputStream.putArchiveEntry(archiveEntry);</span>
+<span class="fc" id="L275">			Files.copy(file, archiveOutputStream);</span>
+<span class="fc" id="L276">			archiveOutputStream.closeArchiveEntry();</span>
 
-<span class="fc" id="L228">			return FileVisitResult.CONTINUE;</span>
+<span class="fc" id="L278">			return FileVisitResult.CONTINUE;</span>
 		}
+	}
+	
+<span class="fc" id="L282">	private static class ArchiverCreateProcessor {</span>
+
+		protected OutputStream decorateFileOutputStream (final FileOutputStream archiveFileOutputStream)
+				throws IOException {
+<span class="fc" id="L286">			return archiveFileOutputStream;</span>
+		}
+
+		protected void processArchiverPostCreate (final ArchiveOutputStream archiveOutputStream, final String charset)
+				throws IOException {
+			// Default implementation does nothing.
+<span class="fc" id="L292">		}</span>
+	}
+	
+<span class="fc" id="L295">	private static class JarArchiverCreateProcessor extends ArchiverCreateProcessor {</span>
+
+		@Override
+		protected void processArchiverPostCreate (final ArchiveOutputStream archiveOutputStream, final String charset)
+				throws IOException {
+<span class="fc" id="L300">			super.processArchiverPostCreate(archiveOutputStream, charset);</span>
+
+			// Wrute the Jar Manifest file META-INF/MANIFEST.MF
+<span class="fc" id="L303">			archiveOutputStream.putArchiveEntry(new JarArchiveEntry(JarFile.MANIFEST_NAME));</span>
+<span class="fc" id="L304">			final Manifest manifest = new Manifest();</span>
+			// Manifest-Version: 1.0
+<span class="fc" id="L306">			manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, DEFAULT_MANIFEST_VERSION);</span>
+<span class="fc" id="L307">			manifest.write(new BufferedOutputStream(archiveOutputStream));</span>
+<span class="fc" id="L308">			archiveOutputStream.closeArchiveEntry();</span>
+<span class="fc" id="L309">		}</span>
+	}
+	
+	private static class TarArchiverCreateProcessor extends ArchiverCreateProcessor {
+
+		private final String compressor;
+
+<span class="fc" id="L316">		protected TarArchiverCreateProcessor (final String compressor) {</span>
+<span class="fc" id="L317">			this.compressor = compressor;</span>
+<span class="fc" id="L318">		}</span>
+
+		@Override
+		protected OutputStream decorateFileOutputStream (final FileOutputStream archiveFileOutputStream)
+				throws IOException {
+<span class="fc" id="L323">			OutputStream returnStream = super.decorateFileOutputStream(archiveFileOutputStream);</span>
+
+<span class="fc bfc" id="L325" title="All 2 branches covered.">			if (null != compressor) {</span>
+				try {
+<span class="fc" id="L327">					returnStream = new CompressorStreamFactory().createCompressorOutputStream(compressor,</span>
+							new BufferedOutputStream(archiveFileOutputStream));
+<span class="fc" id="L329">				} catch (CompressorException e) {</span>
+<span class="fc" id="L330">					throw new IOException(&quot;Error wrapping the file into a Compressed stream&quot;, e);</span>
+<span class="fc" id="L331">				}</span>
+			}
+
+<span class="fc" id="L334">			return returnStream;</span>
+		}
+
+		@Override
+		protected void processArchiverPostCreate (final ArchiveOutputStream archiveOutputStream, final String charset)
+				throws IOException {
+<span class="fc" id="L340">			super.processArchiverPostCreate(archiveOutputStream, charset);</span>
+<span class="fc" id="L341">			final TarArchiveOutputStream tarArchiveOutputStream = (TarArchiveOutputStream) archiveOutputStream;</span>
+<span class="fc" id="L342">			tarArchiveOutputStream.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);</span>
+<span class="fc" id="L343">			tarArchiveOutputStream.setAddPaxHeadersForNonAsciiNames(true);</span>
+<span class="fc" id="L344">		}</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
