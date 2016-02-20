@@ -405,7 +405,7 @@ public class DirectoryArchiverUtilTest {
 					if (!normalizedPath.endsWith("/")) {
 						normalizedPath += "/";
 					}
-					archiveEntries.dirs.add(normalizedPath);
+					archiveEntries.dirs.add(normalizedPath.replace("\\", "/"));
 				}
 				return FileVisitResult.CONTINUE;
 			}
@@ -415,7 +415,7 @@ public class DirectoryArchiverUtilTest {
 				final Path relativeSourcePath = sourcePath.relativize(file);
 				final String normalizedPath = normalizedPathPrefix.toString() + relativeSourcePath;
 				final byte[] md5Digest = getMd5Digest(Files.newInputStream(file), true);
-				archiveEntries.files.put(normalizedPath, md5Digest);
+				archiveEntries.files.put(normalizedPath.replace("\\", "/"), md5Digest);
 				return FileVisitResult.CONTINUE;
 			}
 		});
@@ -518,6 +518,5 @@ public class DirectoryArchiverUtilTest {
 	private class ArchiveEntries {
 		private Set<String> dirs = new HashSet<>();
 		private Map<String, byte[]> files = new HashMap<>();
-
 	}
 }

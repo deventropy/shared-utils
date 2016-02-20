@@ -1,0 +1,107 @@
+# For a full reference, see http://www.appveyor.com/docs/appveyor-yml
+# Current file configured from http://www.yegor256.com/2015/01/10/windows-appveyor-maven.html and
+# https://github.com/asciidoctor/asciidoctor-maven-plugin/blob/master/appveyor.yml
+
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+# version format
+version: '{branch}-{build}'
+
+# Do not build certain branches
+branches:
+# If we want to only build certain branches, add 
+# only:
+  except:
+    - gh-pages
+    - travis
+
+# Do not build on tags (GitHub only)
+skip_tags: true
+
+# Skipping commits with particular message or from user
+# skip_commits:
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+# Operating system (build VM template)
+os: Windows Server 2012
+
+# scripts that are called at very beginning, before repo cloning
+init:
+  - git config --global core.autocrlf input
+
+# Ignored ones:
+# clone_folder
+# shallow_clone
+# hosts
+
+# set clone depth
+clone_depth: 5                      # clone entire repository history if not defined
+
+# Environment Variables
+environment:
+  DENT_APPV_MVN_SETTINGS_REPO: https://github.com/deventropy/deventropy-parent.git
+  DENT_APPV_MVN_SETTINGS_BRANCH: travis
+  DENT_APPV_MVN_SETTINGS_DIR: C:\projects\deventropy-parent-travis
+  matrix:
+    - JAVA_HOME: C:\Program Files\Java\jdk1.7.0
+    - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+    
+# build cache to preserve files/folders between builds
+cache:
+  - C:\maven
+  - C:\Users\appveyor\.m2
+
+# scripts that run after cloning repository
+install:
+  # Install maven
+  - ps: |
+      Add-Type -AssemblyName System.IO.Compression.FileSystem
+      if (!(Test-Path -Path "C:\maven\apache-maven-3.3.9" )) {
+        (new-object System.Net.WebClient).DownloadFile(
+          'http://repo1.maven.org/maven2/org/apache/maven/apache-maven/3.3.9/apache-maven-3.3.9-bin.zip',
+          'C:\maven-bin-3.3.9.zip'
+        )
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\maven-bin-3.3.9.zip", "C:\maven")
+      }
+  # Prepend Java entry, remove Ruby entry (C:\Ruby193\bin;) from PATH
+  - cmd: SET PATH=C:\maven\apache-maven-3.3.9\bin;%JAVA_HOME%\bin;%PATH:C:\Ruby193\bin;=%
+  - cmd: SET MAVEN_OPTS=-XX:MaxPermSize=256m -Xmx2g
+  - cmd: SET JAVA_OPTS=-XX:MaxPermSize=256m -Xmx2g
+  - cmd: mvn --version
+  - cmd: java -version
+  # Get our profile
+  - cmd: git clone -b %DENT_APPV_MVN_SETTINGS_BRANCH% %DENT_APPV_MVN_SETTINGS_REPO% %DENT_APPV_MVN_SETTINGS_DIR%
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+# build platform, i.e. x86, x64, Any CPU. This setting is optional.
+platform: Any CPU
+
+build_script:
+  - mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --settings %DENT_APPV_MVN_SETTINGS_DIR%\travis-mvn-settings.xml
+
+#---------------------------------#
+#       tests configuration       #
+#---------------------------------#
+
+test_script:
+  - mvn test --batch-mode --show-version --settings %DENT_APPV_MVN_SETTINGS_DIR%\travis-mvn-settings.xml
+
+#---------------------------------#
+#         notifications           #
+#---------------------------------#
+
+notifications:
+  - provider: Email
+    to:
+      - deventropy-commits@lists.sourceforge.net
+    on_build_success: true
+    on_build_failure: true
+    on_build_status_changed: true

@@ -36,9 +36,9 @@ The [Development Entropy](../) [Shared Utils](./) project is hosted on
 GitHub. See the [GitHub project](http://github.com/deventropy/shared-utils) for source code,
 [issue tracker](https://github.com/deventropy/shared-utils/issues), etc.
 
-The project uses multiple online tools for Continuous Integration ([Travis CI](http://travis-ci.org/)), Unit Test
-Coverage ([Coveralls](http://coveralls.io/)), Static Code analysis ([Coverity](http://www.coverity.com/),
-[Codacy](https://www.codacy.com/)), Dependency and Build Plug-in version tracking ([VersionEye](https://www.versioneye.com/)).
+The project uses multiple online tools for Continuous Integration ([Travis CI](http://travis-ci.org/)) and [AppVeyor](https://ci.appveyor.com/);
+Unit Test Coverage ([Coveralls](http://coveralls.io/)); Static Code analysis ([Coverity](http://www.coverity.com/),
+[Codacy](https://www.codacy.com/)); Dependency and Build Plug-in version tracking ([VersionEye](https://www.versioneye.com/)).
 The services used are provided free of charge to open source projects by the owners of the services. **The badges above
 link to the project's pages on these tools.**
 
