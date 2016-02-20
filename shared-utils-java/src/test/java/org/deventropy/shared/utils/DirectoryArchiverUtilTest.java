@@ -17,7 +17,9 @@ package org.deventropy.shared.utils;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -44,6 +46,15 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -60,6 +71,8 @@ public class DirectoryArchiverUtilTest {
 	
 	private static final String ZIP_FILE_SUFFIX = ".zip";
 	private static final String JAR_FILE_SUFFIX = ".jar";
+	private static final String TAR_FILE_SUFFIX = ".tar";
+	private static final String TAR_GZ_FILE_SUFFIX = ".tar.gz";
 	
 	private static final String VALID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-=+_{}|"
 			+ "\\;:'\"/?.>,<~!@#$%^&*()~` \n";
@@ -78,7 +91,7 @@ public class DirectoryArchiverUtilTest {
 	};
 	
 	private final Random random = new Random();
-
+	
 	@Test
 	public void testZipArchiveNullPrefix () throws IOException {
 		final String archiveFilePath = testZipArchive(null, testFileStructure01);
@@ -101,13 +114,6 @@ public class DirectoryArchiverUtilTest {
 	public void testZipArchiveWinPrefix () throws IOException {
 		final String archiveFilePath = testZipArchive("prefix\\path\\win", testFileStructure01);
 		assertTrue("Should test as .zip file (testZipArchiveWinPrefix)", archiveFilePath.endsWith(ZIP_FILE_SUFFIX));
-	}
-	
-	@Test(expected = IOException.class)
-	public void testZipArchiveForceIOException () throws IOException {
-		final File rootFolder = tempFolder.newFolder();
-		final File archiveFile = tempFolder.newFolder();
-		DirectoryArchiverUtil.createZipArchiveOfDirectory(archiveFile.getAbsolutePath(), rootFolder, null);
 	}
 	
 	private String testZipArchive (final String prefix, final String[] fileStructure) throws IOException {
@@ -180,20 +186,13 @@ public class DirectoryArchiverUtilTest {
 		assertTrue("Should test as .jar file (testJarArchiveWinPrefix)", archiveFilePath.endsWith(JAR_FILE_SUFFIX));
 	}
 	
-	@Test(expected = IOException.class)
-	public void testJarArchiveForceIOException () throws IOException {
-		final File rootFolder = tempFolder.newFolder();
-		final File archiveFile = tempFolder.newFolder();
-		DirectoryArchiverUtil.createJarArchiveOfDirectory(archiveFile.getAbsolutePath(), rootFolder, null);
-	}
-	
 	private String testJarArchive (final String prefix, final String[] fileStructure) throws IOException {
 		final File rootFolder = tempFolder.newFolder();
 		createDirectoryTree(rootFolder, fileStructure);
 		final String testArchiveName = "archive-test-" + random.nextInt() + JAR_FILE_SUFFIX;
 		final File archiveFile = tempFolder.newFile(testArchiveName);
 		DirectoryArchiverUtil.createJarArchiveOfDirectory(archiveFile.getAbsolutePath(), rootFolder, prefix);
-		assertTrue("Zip file should not be zero sized", archiveFile.length() > 0);
+		assertTrue("Jar file should not be zero sized", archiveFile.length() > 0);
 		checkJarArchive(archiveFile, rootFolder, prefix);
 		return archiveFile.getPath();
 	}
@@ -221,11 +220,11 @@ public class DirectoryArchiverUtilTest {
 					continue;
 				}
 				if (jarEntry.isDirectory()) {
-					assertTrue("Directory in zip should be from us [" + jarEntry.getName() + "]",
+					assertTrue("Directory in jar should be from us [" + jarEntry.getName() + "]",
 							archiveEntries.dirs.contains(jarEntry.getName()));
 					archiveEntries.dirs.remove(jarEntry.getName());
 				} else {
-					assertTrue("File in zip should be from us [" + jarEntry.getName() + "]",
+					assertTrue("File in jar should be from us [" + jarEntry.getName() + "]",
 							archiveEntries.files.containsKey(jarEntry.getName()));
 					final byte[] inflatedMd5 = getMd5Digest(jarFile.getInputStream(jarEntry), false);
 					assertArrayEquals("MD5 hash of files should equal [" + jarEntry.getName() + "]",
@@ -235,13 +234,152 @@ public class DirectoryArchiverUtilTest {
 			}
 	
 			// Check that all files and directories have been accounted for
-			assertTrue("All directories should be in the zip", archiveEntries.dirs.isEmpty());
-			assertTrue("All files should be in the zip", archiveEntries.files.isEmpty());
+			assertTrue("All directories should be in the jar", archiveEntries.dirs.isEmpty());
+			assertTrue("All files should be in the jar", archiveEntries.files.isEmpty());
 		} finally {
 			if (null != jarFile) {
 				jarFile.close();
 			}
 		}
+	}
+	
+	@Test
+	public void testTarArchiveNullPrefix () throws IOException {
+		final String archiveFilePath = testTarArchive(null, testFileStructure01);
+		assertTrue("Should test as .tar file (testZipArchiveNullPrefix)", archiveFilePath.endsWith(TAR_FILE_SUFFIX));
+	}
+	
+	@Test
+	public void testTarArchiveEmptyPrefix () throws IOException {
+		final String archiveFilePath = testTarArchive("", testFileStructure01);
+		assertTrue("Should test as .tar file (testZipArchiveEmptyPrefix)", archiveFilePath.endsWith(TAR_FILE_SUFFIX));
+	}
+	
+	@Test
+	public void testTarArchivePrefix () throws IOException {
+		final String archiveFilePath = testTarArchive("prefix/path", testFileStructure01);
+		assertTrue("Should test as .tar file (testZipArchivePrefix)", archiveFilePath.endsWith(TAR_FILE_SUFFIX));
+	}
+	
+	@Test
+	public void testTarArchiveWinPrefix () throws IOException {
+		final String archiveFilePath = testTarArchive("prefix\\path\\win", testFileStructure01);
+		assertTrue("Should test as .tar file (testZipArchiveWinPrefix)", archiveFilePath.endsWith(TAR_FILE_SUFFIX));
+	}
+	
+	private String testTarArchive (final String prefix, final String[] fileStructure) throws IOException {
+		final File rootFolder = tempFolder.newFolder();
+		createDirectoryTree(rootFolder, fileStructure);
+		final String testArchiveName = "archive-test-" + random.nextInt() + TAR_FILE_SUFFIX;
+		final File archiveFile = tempFolder.newFile(testArchiveName);
+		DirectoryArchiverUtil.createTarArchiveOfDirectory(archiveFile.getAbsolutePath(), rootFolder, prefix);
+		assertTrue("Tar file should not be zero sized", archiveFile.length() > 0);
+		checkTarArchive(archiveFile, rootFolder, prefix);
+		return archiveFile.getPath();
+	}
+	
+	private void checkTarArchive (final File archiveFile, final File sourceDirectory, final String pathPrefix)
+			throws IOException {
+
+		ArchiveInputStream tarInputStream = null;
+		try {
+			tarInputStream = new ArchiveStreamFactory().createArchiveInputStream(ArchiveStreamFactory.TAR,
+					new BufferedInputStream(new FileInputStream(archiveFile)));
+			final ArchiveEntries archiveEntries = createArchiveEntries(sourceDirectory, pathPrefix);
+	
+			ArchiveEntry tarEntry = null;
+			while ((tarEntry = tarInputStream.getNextEntry()) != null) {
+				if (tarEntry.isDirectory()) {
+					assertTrue("Directory in tar should be from us [" + tarEntry.getName() + "]",
+							archiveEntries.dirs.contains(tarEntry.getName()));
+					archiveEntries.dirs.remove(tarEntry.getName());
+				} else {
+					assertTrue("File in tar should be from us [" + tarEntry.getName() + "]",
+							archiveEntries.files.containsKey(tarEntry.getName()));
+					final byte[] inflatedMd5 = getMd5Digest(new BoundedInputStream(tarInputStream, tarEntry.getSize()),
+							false);
+					assertArrayEquals("MD5 hash of files should equal [" + tarEntry.getName() + "]",
+							archiveEntries.files.get(tarEntry.getName()), inflatedMd5);
+					archiveEntries.files.remove(tarEntry.getName());
+				}
+			}
+	
+			// Check that all files and directories have been accounted for
+			assertTrue("All directories should be in the tar", archiveEntries.dirs.isEmpty());
+			assertTrue("All files should be in the tar", archiveEntries.files.isEmpty());
+		} catch (ArchiveException e) {
+			throw new IOException(e);
+		} finally {
+			if (null != tarInputStream) {
+				tarInputStream.close();
+			}
+		}
+	}
+	
+	@Test
+	public void testTarGzArchiveNullPrefix () throws IOException {
+		final String archiveFilePath = testTarGzArchive(null, testFileStructure01);
+		assertTrue("Should test as .tar.gz file (testZipArchiveNullPrefix)",
+				archiveFilePath.endsWith(TAR_GZ_FILE_SUFFIX));
+	}
+	
+	@Test
+	public void testTarGzArchiveEmptyPrefix () throws IOException {
+		final String archiveFilePath = testTarGzArchive("", testFileStructure01);
+		assertTrue("Should test as .tar.gz file (testZipArchiveEmptyPrefix)",
+				archiveFilePath.endsWith(TAR_GZ_FILE_SUFFIX));
+	}
+	
+	@Test
+	public void testTarGzArchivePrefix () throws IOException {
+		final String archiveFilePath = testTarGzArchive("prefix/path", testFileStructure01);
+		assertTrue("Should test as .tar.gz file (testZipArchivePrefix)", archiveFilePath.endsWith(TAR_GZ_FILE_SUFFIX));
+	}
+	
+	@Test
+	public void testTarGzArchiveWinPrefix () throws IOException {
+		final String archiveFilePath = testTarGzArchive("prefix\\path\\win", testFileStructure01);
+		assertTrue("Should test as .tar.gz file (testZipArchiveWinPrefix)",
+				archiveFilePath.endsWith(TAR_GZ_FILE_SUFFIX));
+	}
+	
+	private String testTarGzArchive (final String prefix, final String[] fileStructure) throws IOException {
+		final File rootFolder = tempFolder.newFolder();
+		createDirectoryTree(rootFolder, fileStructure);
+		final String testArchiveName = "archive-test-" + random.nextInt() + TAR_GZ_FILE_SUFFIX;
+		final File archiveFile = tempFolder.newFile(testArchiveName);
+		DirectoryArchiverUtil.createGZippedTarArchiveOfDirectory(archiveFile.getAbsolutePath(), rootFolder, prefix);
+		assertTrue("Tar GZ file should not be zero sized", archiveFile.length() > 0);
+		checkTarGzArchive(archiveFile, rootFolder, prefix);
+		return archiveFile.getPath();
+	}
+	
+	private void checkTarGzArchive (final File archiveFile, final File sourceDirectory, final String pathPrefix)
+			throws IOException {
+
+		FileInputStream fin = null;
+		CompressorInputStream gzIn = null;
+		FileOutputStream out = null;
+
+		final File unGzippedTar = tempFolder.newFile("archive-test-" + random.nextInt() + TAR_FILE_SUFFIX);
+
+		try {
+			fin = new FileInputStream(archiveFile);
+			final BufferedInputStream in = new BufferedInputStream(fin);
+			out = new FileOutputStream(unGzippedTar);
+			gzIn = new CompressorStreamFactory().createCompressorInputStream(CompressorStreamFactory.GZIP, in);
+
+			IOUtils.copy(gzIn, out);
+
+		} catch (CompressorException e) {
+			throw new IOException(e);
+		} finally {
+			IOUtils.closeQuietly(out);
+			IOUtils.closeQuietly(gzIn);
+			IOUtils.closeQuietly(fin);
+		}
+
+		checkTarArchive(unGzippedTar, sourceDirectory, pathPrefix);
 	}
 
 	private ArchiveEntries createArchiveEntries (final File sourceDirectory, final String pathPrefix)

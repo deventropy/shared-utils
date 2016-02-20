@@ -28,7 +28,7 @@
  * <li><em>{@link org.deventropy.shared.utils.UrlResourceUtil UrlResourceUtil}:</em> Methods to normalize access to
  * resources across multiple sources (classpath, file system, etc.).</li>
  * <li><em>{@link org.deventropy.shared.utils.DirectoryArchiverUtil DirectoryArchiverUtil}:</em> Methods to create
- * zip or jar files for entire contents of a directory.</li>
+ * zip, jar, tar or gzipped tar files for entire contents of a directory.</li>
  * </ul>
  * 
  * @author Bindul Bhowmik

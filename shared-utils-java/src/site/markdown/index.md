@@ -24,12 +24,12 @@ marked optional.
 
 The library has the following utilities (all in the package `org.deventropy.shared.utils`):
 
-| Utility | Summary | Additional Documentation |
-|---------|---------|--------------------------|
-| **ArgumentCheck** | Methods to validate parameters to methods (`null` checks, etc.) | |
-| **ClassUtil** | Utility to find appropriate class loaders / resources in the classpath. | |
-| **UrlResourceUtil** | Methods to normalize access to resources across multiple sources (classpath, file system, etc.). The formats supported by this class are documented in [Resource Location Formats](./resource-location-formats.html) | [Resource Location Formats](./resource-location-formats.html) |
-| **DirectoryArchiveUtil** | Rudimentary methods to create zip or jar files for entire contents of a directory. | [Directory Archive Util Guide](./guide-directory-archive-util.html) |
+| Utility | Summary | Additional Documentation | Additional Dependency |
+|---------|---------|--------------------------|-----------------------|
+| **ArgumentCheck** | Methods to validate parameters to methods (`null` checks, etc.) | | |
+| **ClassUtil** | Utility to find appropriate class loaders / resources in the classpath. | | |
+| **UrlResourceUtil** | Methods to normalize access to resources across multiple sources (classpath, file system, etc.). The formats supported by this class are documented in [Resource Location Formats](./resource-location-formats.html) | [Resource Location Formats](./resource-location-formats.html) | |
+| **DirectoryArchiveUtil** | Rudimentary methods to create zip or jar files for entire contents of a directory. | [Directory Archive Util Guide](./guide-directory-archive-util.html) | org.apache.commons:commons-compress |
 
 ## Attributions
 
@@ -37,4 +37,7 @@ The library has the following utilities (all in the package `org.deventropy.shar
 under the Apache Software License ver. 2.0.
 
 `DirectoryArchiverUtil` is influenced by ideas by user **Gili** on a
-[Stackoverflow discussion](http://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file)
+[Stackoverflow discussion](http://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file).
+And uses [Apache Commons Compress](http://commons.apache.org/proper/commons-compress/); Apache Commons, Apache, the
+Apache feather logo, and the Apache Commons project logos are trademarks of
+[The Apache Software Foundation](http://www.apache.org/).

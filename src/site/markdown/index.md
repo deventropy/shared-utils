@@ -24,6 +24,7 @@ here to be shared across projects.
 
 [![License](https://img.shields.io/github/license/deventropy/shared-utils.svg)](./license.html)
 [![Build Status](https://travis-ci.org/deventropy/shared-utils.svg?branch=master)](https://travis-ci.org/deventropy/shared-utils)
+[![Build status](https://ci.appveyor.com/api/projects/status/d1upboncy98yqsag?svg=true)](https://ci.appveyor.com/project/deventropy/shared-utils)
 [![Coverage Status](https://coveralls.io/repos/github/deventropy/shared-utils/badge.svg?branch=master)](https://coveralls.io/github/deventropy/shared-utils)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/c7eca2b7e7b247159301d806f2446d0b)](https://www.codacy.com/app/deventropy/shared-utils)
 [![Coverity Scan Status](https://scan.coverity.com/projects/7888/badge.svg)](https://scan.coverity.com/projects/deventropy-shared-utils)

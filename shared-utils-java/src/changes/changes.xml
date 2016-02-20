@@ -23,6 +23,9 @@ limitations under the License.
 	</properties>
 	<body>
 		<release version="1.0-alpha.1" date="2099-12-31" description="Initial Release">
+			<action dev="bindul" date="2016-02-19" type="add" issue="7">
+				Tar and GZipped Tar format support for the Directory archiver utility
+			</action>
 			<action dev="bindul" date="2016-02-11" type="add" issue="2">
 				Directory archiver utility
 			</action>
