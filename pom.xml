@@ -51,6 +51,24 @@ limitations under the License.
 						<version>1.0-beta.1-SNAPSHOT</version>
 					</dependency>
 				</dependencies>
+				<executions>
+					<execution>
+						<id>checkstyle-verify-main</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<configLocation>deventropy/code-quality/checkstyle/deventropy-checkstyle.xml</configLocation>
+							<headerLocation>deventropy/code-quality/checkstyle/license-header.txt</headerLocation>
+							<linkXRef>false</linkXRef>
+							<consoleOutput>true</consoleOutput>
+							<includeResources>true</includeResources>
+							<includeTestSourceDirectory>true</includeTestSourceDirectory>
+							<includeTestResources>true</includeTestResources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<!--  See http://www.petrikainulainen.net/programming/maven/creating-code-coverage-reports-for-unit-and-integration-tests-with-the-jacoco-maven-plugin/ -->
 			<plugin>

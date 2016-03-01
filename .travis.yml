@@ -14,6 +14,8 @@ env:
         - secure: "gbK0c3IbHze8tEDKA7Cs6JdrGu/q5yeU8V3C6RcVNEbp1TRjTk14i7OzXswBJedZBjpA150pvFPMPdl8BLcg89nlou37PTyxBnPpPViOmXD+6L6oaCL48tevs7uiEQn2diYZ+WlXgBa/lYA2ZcAz36p22LdkdZU7ZFJ5R6CFEU0Zuik0xCKkNKZGJYGGFef74JbQh1MZ3APFzDbJfW4az95fXy6zrreTUhrEf543F8KBZHId87qmeqC3MC3WUlIHjp+eYbDhj4RZIXNQu32MX8nIj/xX+VNeAhMGqXscdt2Agw5cYTnZl40hA7BduuGY24MHXq32uwivBa0xIG0k6yHFuYnqIJ0BU+54kIrSvsrRIJ4AjgAzpGUnnM4takXULDe7heqtbMZlgWda9LVIVPBpZaD0jWjT+ZN2Lymrcs7W4NKvhq97PwVY1EOyl0vXu0ZIMUX8pnLSK1ELFGohoK1rTeTZsLTtSaYG2RBFpnxr4e0WFJoavdP+xg8qHs7EWdeCksnXPHIY5YrnMNBcomB4m34EbmXY1RyRaptjXYL9xAq5oJ9CCwk7nCXHXL1FLII8Wwj/1pKq39l41xj34Y/b4/0tDWC8PoF+UGBJMgR6oOY1t74oEZDWASdUpem+cvu4uvR35b2OmrGcgYSYCNpPot4afwKb3ulAdwSJ4tk="
         # CODACY_PROJECT_TOKEN=<secret...>
         - secure: "fWrPmkYiOofL8+vfrvoyzxiBGhblvIBHqTXcSAjcJIxh7LyFk2SJflJimaMms71vL87ikJ/04ZjjXLGtitc8g1SxUVbtce1HC4iLhP1XiVGYDdzfH5NbYvRFV2+/uUYUbBSCPISn5sHCKd8TX4LbzIFRx/v4U/LH8Dv1YJfMx5OM9CvQb1mnGN2gIgBjinHPH2kMqKAi3VgTWCAMoWT88TTotPh+JToY1wTf+ZAsgFVeFfV1WpD6ze0aiOu8nECzNBXaA0pXsCvvPY5LACWbM7J2ak41xvQkofOYqInEaWJghoyrdT18GxR+U0K/aALrdx+L+auEUblrhm9kRavV8/cYWyBssrQ+EriUCtEa5Fm11QusNO2nEpVzKaut9PIF0f8Z5p85sIlngzWNRRbYvSaDkvFe6NT3MV6VbQuB/WwvrJqkr63evrIeYuZu85nA6QY8o2O0wp9eVUT7lOdTa0vf9598tVik4jzG4gfGfxU7b6vqTG5HskN2LhW6aPbrPCSQI7hWSHx/NajPAX1V8lV0xa2rb/rVF70hbAtKputf6vqCXXdDrWCxvhZuT3p5w+Y70vHlpN/pwb7RFoX8osZNQV0vuzNlol6Qhb+p6k0Y0TCoWdsWHrisx0V8muP8kl+wMx9CjkrViFeFMscUYd82nlZFysFaTMRSQ5Htze0="
+        # VERSIONEYE_REPO_KEY=<secret...>
+        - secure: "dnHgzTVNi6wddTVMpOaAifVLixegrZZFwhi3cDzA6eX6jrpn3TEtJYOx/H8e3cyxLAt8Fhu9/T8SK5aFfjJJuwYE/sPzS+4Q418Qi63pK/30AYgJya1x+TusywjCh1K0gsP+SHZmWS3V69XOg0IbEJDCGyfkEwznhc3rzEjH5Scu8OLDw7frRJZqfhDIOadx48JvrexV9E7tjeEQ620o5WDmarRMYZA/qrBGddcTrXVYpedKXvm5fLyypqi26EwOfdOmP5hVcKmbsUquSAHHxqIz4D3q8G7jGeCTcBuUQ/L7I+fk7k8HSu/J4TUs0K+ZlNHXJt8jk14cnJUthhivQYruK0aT9UrGvYShDAdouNnj8tgv887+2nmkx0RWgpDILZjV/yrq20s7YrttatUIf2G8FWLiUcA0SpdD1BQw+dNjRNDFAIINVbQvfmM9OY3OrGQft0Z3ikWzdqcmcGwzMUOJeuBHN0N3IfgbrqU7PNTgMGKDuL57H2zQTK5ugY+hXCZl5saz5F5/+5a57MI8jT7L3yc7B+bz/gTLfwwheG02b9SsjRkkq7yeLKAsAGYWy2x1CMW4KbT5Syh0ce7gagI+O/Law8Nz3j7q7/d1m4Dc/u8iX0ZFfxCkmfjEjwXz9tbN1fahlPIdxAkdBLDSe9cunyTDBU35DKPp5CGhGkk="
 
 # We use JFrog OSS Repository not available in the stock Travis CI environment; so custom settings.xml
 # See https://coderwall.com/p/9b_lfq/deploying-maven-artifacts-from-travis
@@ -36,6 +38,8 @@ after_success:
     - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && mvn clean test jacoco:report coveralls:report'
     # The following needs to be repeated for every module (may want to script it at some point)
     - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && codacy-coverage-reporter -l Java -r shared-utils-java/target/site/jacoco/jacoco.xml --prefix shared-utils-java/src/main/java/'
+    # Update dependencies in VersionEye
+    - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && mvn com.versioneye:versioneye-maven-plugin:update'
 
 # Speed up builds
 cache:
