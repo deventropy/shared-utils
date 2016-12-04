@@ -1,0 +1,10 @@
+Development Entropy Shared Utilities
+Copyright (c) 2015-2016 Development Entropy (deventropy.org) Contributors
+
+This product includes software developed at the Deventropy Project (https://github.com/deventropy). Licensed under the 
+Apache License, Version 2.0. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+UrlResourceUtil is derived from the Spring Framework licensed under the Apache Software License ver. 2.0.
+
+DirectoryArchiverUtil is influenced by ideas by user **Gili** on a Stackoverflow discussion at
+http://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file
