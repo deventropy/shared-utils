@@ -57,4 +57,7 @@ limitations under the License.
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<properties>
+		<codacy.project.prefix>shared-utils-java/src/main/java/</codacy.project.prefix>
+	</properties>
 </project>
