@@ -197,7 +197,7 @@ limitations under the License.
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<docEncoding>${project.build.sourceEncoding}</docEncoding>
 					<links>
-						<link>http://docs.oracle.com/javase/7/docs/api/</link>
+						<link>http://docs.oracle.com/javase/8/docs/api/</link>
 					</links>
 					<archive>
 						<manifest>
