@@ -47,9 +47,12 @@ environment:
   DENT_APPV_MVN_SETTINGS_REPO: https://github.com/deventropy/deventropy-parent.git
   DENT_APPV_MVN_SETTINGS_BRANCH: travis
   DENT_APPV_MVN_SETTINGS_DIR: C:\projects\deventropy-parent-travis
-  matrix:
-    - JAVA_HOME: C:\Program Files\Java\jdk1.7.0
-    - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+  JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+  
+# Matrix will be back after we build on multiple JDKs, now just Java 8  
+#  matrix:
+#    - JAVA_HOME: C:\Program Files\Java\jdk1.7.0
+#    - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
     
 # build cache to preserve files/folders between builds
 cache:
